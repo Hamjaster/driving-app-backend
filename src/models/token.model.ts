@@ -4,6 +4,7 @@ import { tokenTypes } from '../config/tokens';
 import { token } from 'morgan';
 
 export interface IToken {
+  id: string;
   token: string;
   user: string;
   userType: string;

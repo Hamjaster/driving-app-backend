@@ -29,7 +29,7 @@ export const PupilController = {
     try {
       const { email, password, otp } = req.body;
       const pupil = await pupilService.getPupilByEmail(email);
-
+      // @ts-ignore
       if (!pupil || !(await pupil.isPasswordMatch(password))) {
         throw new ApiError(httpStatus.UNAUTHORIZED, 'Incorrect email or password');
       }

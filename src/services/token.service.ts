@@ -4,7 +4,7 @@ import moment from 'moment';
 import httpStatus from 'http-status';
 import config from '../config/config';
 // import * as userService from './user.service';
-import { Token } from '../models/token.model';
+import { IToken, Token } from '../models/token.model';
 import { ApiError } from '../utils/ApiError';
 import { tokenTypes } from '../config/tokens';
 import { token } from 'morgan';
@@ -55,7 +55,8 @@ const tokenServices = {
   verifyToken: async (token: string, type: string) => {
     const payload = jwt.verify(token, config.jwt.secret);
     console.log(payload, 'payload', token, 'token');
-    const tokenDoc = await Token.findOne({ token, type, user: payload.sub, blacklisted: false });
+    let userId = payload.sub as string;
+    const tokenDoc = await Token.findOne({ token, type, user: userId, blacklisted: false });
     if (!tokenDoc) {
       throw new Error('Token not found');
     }
