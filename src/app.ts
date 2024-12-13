@@ -6,7 +6,7 @@ import compression from 'compression';
 import cors from 'cors';
 import passport from 'passport';
 import httpStatus from 'http-status';
-import config from './config/config';
+// import config from './config/config';
 import { successHandler, errorHandler as morganErr } from './config/morgan';
 import { jwtStrategy } from './config/passport';
 import { authLimiter } from './middlewares/rateLimiter';
@@ -16,10 +16,10 @@ import { ApiError } from './utils/ApiError';
 
 const app = express();
 
-if (config.env !== 'test') {
-  app.use(successHandler);
-  app.use(morganErr);
-}
+// if (config.env !== 'test') {
+//   app.use(successHandler);
+//   app.use(morganErr);
+// }
 
 // set security HTTP headers
 app.use(helmet());
@@ -46,9 +46,9 @@ app.use(passport.initialize());
 passport.use('jwt', jwtStrategy);
 
 // limit repeated failed requests to auth endpoints
-if (config.env === 'production') {
-  app.use('/v1/auth', authLimiter);
-}
+// if (config.env === 'production') {
+//   app.use('/v1/auth', authLimiter);
+// }
 
 // v1 api routes
 app.use('/v1', routes);
