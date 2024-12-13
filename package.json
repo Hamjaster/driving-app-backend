@@ -1,6 +1,7 @@
 {
   "name": "create-nodejs-express-app",
   "version": "1.7.0",
+  "type": "module",
   "description": "Backend for Driving Application",
   "bin": "bin/createNodejsApp.js",
   "main": "./src/index.ts",
