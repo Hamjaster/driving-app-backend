@@ -1,9 +1,10 @@
-import mongoose, { Model, model, Schema } from 'mongoose';
 import validator from 'validator';
 import bcrypt from 'bcryptjs';
 import { paginate } from './plugins/paginate.plugin.js';
 import { toJSON } from './plugins/toJSON.plugin.js';
 import { roles } from '../config/roles.js';
+import mongoose from 'mongoose';
+const { Schema, model, Model } = mongoose;
 
 export interface IPupil {
   id: string;
@@ -71,7 +72,7 @@ const StudentSchema = new Schema<IPupil, IPupilModel>({
   plan: Number,
   bookings: [
     {
-      instructorId: { type: Schema.Types.ObjectId, ref: 'ADI', required: true },
+      instructorId: { type: String, ref: 'ADI', required: true },
       date: { type: Date, required: true },
       status: { type: String, enum: ['pending', 'approved', 'rejected'], default: 'pending' },
     },
@@ -84,7 +85,7 @@ const StudentSchema = new Schema<IPupil, IPupilModel>({
   },
   progressReports: [
     {
-      lessonId: { type: Schema.Types.ObjectId, ref: 'Lesson', required: true },
+      lessonId: { type: String, ref: 'Lesson', required: true },
       feedback: { type: String },
       date: { type: Date, required: true },
       score: { type: Number },
@@ -92,7 +93,7 @@ const StudentSchema = new Schema<IPupil, IPupilModel>({
   ],
   ratings: [
     {
-      instructorId: { type: Schema.Types.ObjectId, ref: 'ADI', required: true },
+      instructorId: { type: String, ref: 'ADI', required: true },
       rating: { type: Number, required: true },
       review: { type: String },
       date: { type: Date, required: true },

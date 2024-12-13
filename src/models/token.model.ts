@@ -1,4 +1,5 @@
-import mongoose, { Schema } from 'mongoose';
+import mongoose from 'mongoose';
+const { Schema, model, Model } = mongoose;
 import { toJSON } from './plugins/toJSON.plugin.js';
 import { tokenTypes } from '../config/tokens.js';
 import { token } from 'morgan';

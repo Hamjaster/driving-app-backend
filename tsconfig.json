@@ -6,10 +6,10 @@
     "outDir": "./dist",
     "rootDir": "./src",
     "esModuleInterop": true,
-    "strict": false,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "noEmitOnError": true
+    // "strict": false,
+    // "skipLibCheck": true,
+    // "forceConsistentCasingInFileNames": true,
+    // "noEmitOnError": true
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules"]
