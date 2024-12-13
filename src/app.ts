@@ -6,13 +6,13 @@ import compression from 'compression';
 import cors from 'cors';
 import passport from 'passport';
 import httpStatus from 'http-status';
-import config from './config/config.js';
-import { successHandler, errorHandler as morganErr } from './config/morgan.js';
-import { jwtStrategy } from './config/passport.js';
-import { authLimiter } from './middlewares/rateLimiter.js';
-import routes from './routes/v1/index.js';
-import { errorConverter, errorHandler } from './middlewares/error.js';
-import { ApiError } from './utils/ApiError.js';
+import config from './config/config';
+import { successHandler, errorHandler as morganErr } from './config/morgan';
+import { jwtStrategy } from './config/passport';
+import { authLimiter } from './middlewares/rateLimiter';
+import routes from './routes/v1/index';
+import { errorConverter, errorHandler } from './middlewares/error';
+import { ApiError } from './utils/ApiError';
 
 const app = express();
 
