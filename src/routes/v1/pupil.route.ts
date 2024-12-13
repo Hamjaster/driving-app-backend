@@ -10,7 +10,8 @@ router.post('/register', validate(pupilValidation.register), PupilController.reg
 router.post('/login', validate(pupilValidation.login), PupilController.login);
 // router.post('/logout', validate(authValidation.logout), PupilController.logout);
 // router.post('/refresh-tokens', validate(authValidation.refreshTokens), PupilController.refreshTokens);
-// router.post('/forgot-password', validate(authValidation.forgotPassword), PupilController.forgotPassword);
+router.post('/forgot-password', validate(pupilValidation.forgotPassword), PupilController.forgotPassword);
+router.post('/change-forgotten-password', validate(pupilValidation.resetPassword), PupilController.changeForgottenPassword);
 // router.post('/reset-password', validate(authValidation.resetPassword), PupilController.resetPassword);
 // router.post('/send-verification-email', auth(), PupilController.sendVerificationEmail);
 // router.post('/verify-email', validate(authValidation.verifyEmail), PupilController.verifyEmail);

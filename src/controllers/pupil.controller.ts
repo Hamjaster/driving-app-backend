@@ -4,7 +4,10 @@ import tokenService from '../services/token.service.js';
 import { tokenTypes, userTypes } from '../config/tokens.js';
 import { IPupil, Pupil } from '../models/pupil.model.js';
 import { ApiError } from '../utils/ApiError.js';
-import { sendPupilApprovalEmail } from '../services/email.service.js';
+import { sendPupilApprovalEmail, sendResetPasswordEmail } from '../services/email.service.js';
+import { error } from 'console';
+import { hashPassword, verifyPassword } from '../utils/lib.js';
+
 // import catchAsync from '../utils/catchAsync';
 // import { pupilService, emailService, tokenService } from '../services'
 
@@ -34,19 +37,59 @@ export const PupilController = {
         throw new ApiError(httpStatus.UNAUTHORIZED, 'Incorrect email or password');
       }
 
-      if (!pupil.isApproved) {
-        throw new ApiError(httpStatus.UNAUTHORIZED, 'Your account is not approved yet');
-      } else if (pupil.isApproved && !otp) {
+      if (!pupil.isApproved && !otp) {
         throw new ApiError(httpStatus.UNAUTHORIZED, 'Kindly pass the OTP obtained after the account approval');
       }
-
-      const otpVerified = tokenService.verifyOTP(otp, pupil.id);
-      if (!otpVerified) {
-        throw new ApiError(httpStatus.UNAUTHORIZED, 'The OTP is incorrect');
+      if (otp) {
+        // Approving the account if otp is given
+        const otpVerified = tokenService.verifyOTP(otp, pupil.id);
+        if (!otpVerified) {
+          throw new ApiError(httpStatus.UNAUTHORIZED, 'The OTP is incorrect');
+        }
+        await Pupil.findByIdAndUpdate(
+          pupil.id,
+          { isApproved: true }, // Update the isApproved field
+          { new: true } // Return the updated document
+        );
       }
       const token = tokenService.generateToken(pupil.id, tokenTypes.ACCESS, userTypes.PUPIL);
       res.status(httpStatus.OK).send({ pupil, token });
     } catch (error: any) {
+      res.status(error.statusCode || httpStatus.INTERNAL_SERVER_ERROR).send({ message: error.message });
+    }
+  },
+
+  async forgotPassword(req: any, res: any) {
+    const { email } = req.body;
+    const pupil = await Pupil.findOne({ email });
+    if (!pupil) {
+      throw new ApiError(httpStatus.NOT_FOUND, 'No Such Pupil Registered');
+    }
+    const resetPasswordToken = await tokenService.generateResetPasswordToken(pupil.id, userTypes.PUPIL);
+    await sendResetPasswordEmail(email, resetPasswordToken);
+    res.status(httpStatus.OK).send({ message: 'Reset Password link sent to email' });
+  },
+
+  async changeForgottenPassword(req: any, res: any) {
+    try {
+      const { token, password } = req.body;
+      const tokenDoc = await tokenService.verifyToken(token, tokenTypes.RESET_PASSWORD, userTypes.PUPIL);
+      if (!tokenDoc) {
+        throw new ApiError(httpStatus.UNAUTHORIZED, 'Unauthenticated');
+      }
+      const pupilFound = await pupilService.getPupilById(tokenDoc.user);
+      if (!pupilFound) {
+        throw new ApiError(httpStatus.UNAUTHORIZED, 'No Such Pupil Registered');
+      }
+
+      await Pupil.findByIdAndUpdate(
+        pupilFound.id,
+        { password: await hashPassword(password) },
+        { new: true, runValidators: true }
+      );
+
+      res.status(httpStatus.OK).send({ message: 'Password updated' });
+    } catch (error) {
       res.status(error.statusCode || httpStatus.INTERNAL_SERVER_ERROR).send({ message: error.message });
     }
   },
@@ -77,12 +120,6 @@ export default PupilController;
 // const refreshTokens = catchAsync(async (req: any, res: any) => {
 //   const tokens = await authService.refreshAuth(req.body.refreshToken);
 //   res.send({ ...tokens });
-// });
-
-// const forgotPassword = catchAsync(async (req: any, res: any) => {
-//   const resetPasswordToken = await tokenService.generateResetPasswordToken(req.body.email);
-//   await emailService.sendResetPasswordEmail(req.body.email, resetPasswordToken);
-//   res.status(httpStatus.NO_CONTENT).send();
 // });
 
 // const resetPassword = catchAsync(async (req: any, res: any) => {

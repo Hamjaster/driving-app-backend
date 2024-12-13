@@ -14,11 +14,7 @@ const AdminController = {
         throw new Error('Approval token not found');
       }
       const pupilId = await adminServices.approvePupil(token);
-      const updatedPupil = await Pupil.findByIdAndUpdate(
-        pupilId,
-        { isApproved: true }, // Update the isApproved field
-        { new: true } // Return the updated document
-      );
+      const updatedPupil = await Pupil.findById(pupilId);
 
       if (!updatedPupil) {
         return res.status(404).send({ message: 'Pupil not found' });

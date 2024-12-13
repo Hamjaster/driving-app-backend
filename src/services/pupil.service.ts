@@ -24,11 +24,11 @@ const pupilServices = {
     return pupil;
   },
 
-  getAllPupils(): Promise<Document<IPupil>[]> {
+  getAllPupils(): Promise<IPupil[]> {
     return Pupil.find() as any;
   },
 
-  async getPupilById(id: string): Promise<Document<IPupil> | null> {
+  async getPupilById(id: string): Promise<IPupil | null> {
     const pupil = await Pupil.findById(id);
 
     if (!pupil) {

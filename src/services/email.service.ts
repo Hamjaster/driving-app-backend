@@ -17,7 +17,7 @@ export const sendEmail = async (to: string, subject: string, text: string, html?
   await transport.sendMail(msg);
 };
 
-const sendResetPasswordEmail = async (to, token) => {
+export const sendResetPasswordEmail = async (to, token) => {
   const subject = 'Reset password';
   // replace this url with the link tothe reset password page of your front-end app
   const resetPasswordUrl = `http://link-to-app/reset-password?token=${token}`;

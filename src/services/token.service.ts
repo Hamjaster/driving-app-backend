@@ -1,6 +1,6 @@
-import { TokenType } from '../config/tokens.js';
+import { TokenType, userTypes } from '../config/tokens.js';
 import jwt from 'jsonwebtoken';
-import moment from 'moment';
+import moment, { Moment } from 'moment';
 import httpStatus from 'http-status';
 import config from '../config/config.js';
 // import * as userService from './user.service';
@@ -11,7 +11,7 @@ import { token } from 'morgan';
 import { generateOTPUtil } from '../utils/lib.js';
 
 const tokenServices = {
-  saveToken: async (token: string, userId: string, expires: Date, type: string, userType: string, blacklisted = false) => {
+  saveToken: async (token: string, userId: string, expires: Moment, type: string, userType: string, blacklisted = false) => {
     var tokenDoc;
     if (expires) {
       tokenDoc = await Token.create({
@@ -34,13 +34,22 @@ const tokenServices = {
     return tokenDoc;
   },
 
-  generateToken: (userId: string, type: string, userType: string, secret = config.jwt.secret) => {
-    const payload = {
-      sub: userId,
-      iat: moment().unix(),
-      // exp: expires.unix(),
-      type,
-    };
+  generateToken: (userId: string, type: string, userType: string, expires?: Moment, secret = config.jwt.secret) => {
+    let payload;
+    if (expires) {
+      payload = {
+        sub: userId,
+        iat: moment().unix(),
+        exp: expires.unix(),
+        type,
+      };
+    } else {
+      payload = {
+        sub: userId,
+        iat: moment().unix(),
+        type,
+      };
+    }
     const tokken = jwt.sign(payload, secret);
     tokenServices.saveToken(tokken, userId, null, type, userType);
     return tokken;
@@ -52,11 +61,11 @@ const tokenServices = {
     return token;
   },
 
-  verifyToken: async (token: string, type: string) => {
+  verifyToken: async (token: string, type: string, userType?: string) => {
     const payload = jwt.verify(token, config.jwt.secret);
     console.log(payload, 'payload', token, 'token');
     let userId = payload.sub as string;
-    const tokenDoc = await Token.findOne({ token, type, user: userId, blacklisted: false });
+    const tokenDoc = await Token.findOne({ token, type, user: userId, blacklisted: false, userType });
     if (!tokenDoc) {
       throw new Error('Token not found');
     }
@@ -92,16 +101,12 @@ const tokenServices = {
   //   };
   // },
 
-  // generateResetPasswordToken: async (email: string) => {
-  //   const user = await userService.getUserByEmail(email);
-  //   if (!user) {
-  //     throw new ApiError(httpStatus.NOT_FOUND, 'No users found with this email');
-  //   }
-  //   const expires = moment().add(config.jwt.resetPasswordExpirationMinutes, 'minutes');
-  //   const resetPasswordToken = generateToken(user.id, expires, tokenTypes.RESET_PASSWORD);
-  //   await saveToken(resetPasswordToken, user.id, expires, tokenTypes.RESET_PASSWORD);
-  //   return resetPasswordToken;
-  // },
+  generateResetPasswordToken: async (userId: string, userType: string) => {
+    const expires = moment().add(config.jwt.resetPasswordExpirationMinutes, 'minutes');
+    const resetPasswordToken = tokenServices.generateToken(userId, tokenTypes.RESET_PASSWORD, userType, expires);
+    await tokenServices.saveToken(resetPasswordToken, userId, expires, tokenTypes.RESET_PASSWORD, userType);
+    return resetPasswordToken;
+  },
 
   // generateVerifyEmailToken: async (user: any) => {
   //   const expires = moment().add(config.jwt.verifyEmailExpirationMinutes, 'minutes');
