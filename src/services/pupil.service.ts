@@ -1,12 +1,12 @@
 import httpStatus from 'http-status';
-import tokenService from './token.service';
-import userService from './token.service';
-import { Token } from '../models/token.model';
-import { tokenTypes } from '../config/tokens';
-import { ApiError } from '../utils/ApiError';
-import { IPupil, Pupil } from '../models/pupil.model';
+import tokenService from './token.service.js';
+import userService from './token.service.js';
+import { Token } from '../models/token.model.js';
+import { tokenTypes } from '../config/tokens.js';
+import { ApiError } from '../utils/ApiError.js';
+import { IPupil, Pupil } from '../models/pupil.model.js';
 import { Document } from 'mongoose';
-import { hashPassword } from '../utils/lib';
+import { hashPassword } from '../utils/lib.js';
 
 const pupilServices = {
   async createPupil(pupilBody: IPupil): Promise<IPupil> {

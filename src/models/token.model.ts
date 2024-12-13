@@ -1,6 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
-import { toJSON } from './plugins/toJSON.plugin';
-import { tokenTypes } from '../config/tokens';
+import { toJSON } from './plugins/toJSON.plugin.js';
+import { tokenTypes } from '../config/tokens.js';
 import { token } from 'morgan';
 
 export interface IToken {

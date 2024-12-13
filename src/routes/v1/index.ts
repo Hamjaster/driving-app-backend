@@ -1,7 +1,7 @@
 import express from 'express';
-import pupilRoutes from './pupil.route';
-import adminRoutes from './admin.route';
-import config from '../../config/config';
+import pupilRoutes from './pupil.route.js';
+import adminRoutes from './admin.route.js';
+import config from '../../config/config.js';
 
 const router = express.Router();
 

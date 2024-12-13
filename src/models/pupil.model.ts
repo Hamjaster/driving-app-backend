@@ -1,9 +1,9 @@
 import mongoose, { Model, model, Schema } from 'mongoose';
 import validator from 'validator';
 import bcrypt from 'bcryptjs';
-import { paginate } from './plugins/paginate.plugin';
-import { toJSON } from './plugins/toJSON.plugin';
-import { roles } from '../config/roles';
+import { paginate } from './plugins/paginate.plugin.js';
+import { toJSON } from './plugins/toJSON.plugin.js';
+import { roles } from '../config/roles.js';
 
 export interface IPupil {
   id: string;

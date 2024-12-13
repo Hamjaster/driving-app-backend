@@ -1,6 +1,6 @@
-import app from '../app';
-import { tokenTypes } from '../config/tokens';
-import tokenServices from './token.service';
+import app from '../app.js';
+import { tokenTypes } from '../config/tokens.js';
+import tokenServices from './token.service.js';
 
 const adminServices = {
   approvePupil: async (token: string) => {

@@ -1,14 +1,14 @@
-import { TokenType } from '../config/tokens';
+import { TokenType } from '../config/tokens.js';
 import jwt from 'jsonwebtoken';
 import moment from 'moment';
 import httpStatus from 'http-status';
-import config from '../config/config';
+import config from '../config/config.js';
 // import * as userService from './user.service';
-import { IToken, Token } from '../models/token.model';
-import { ApiError } from '../utils/ApiError';
-import { tokenTypes } from '../config/tokens';
+import { IToken, Token } from '../models/token.model.js';
+import { ApiError } from '../utils/ApiError.js';
+import { tokenTypes } from '../config/tokens.js';
 import { token } from 'morgan';
-import { generateOTPUtil } from '../utils/lib';
+import { generateOTPUtil } from '../utils/lib.js';
 
 const tokenServices = {
   saveToken: async (token: string, userId: string, expires: Date, type: string, userType: string, blacklisted = false) => {

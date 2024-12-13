@@ -1,10 +1,10 @@
 import httpStatus from 'http-status';
-import adminServices from '../services/admin.service';
-import { Pupil } from '../models/pupil.model';
-import tokenServices from '../services/token.service';
-import { tokenTypes, userTypes } from '../config/tokens';
-import { sendEmail, sendPupilApprovalEmail } from '../services/email.service';
-import Config from '../config/config';
+import adminServices from '../services/admin.service.js';
+import { Pupil } from '../models/pupil.model.js';
+import tokenServices from '../services/token.service.js';
+import { tokenTypes, userTypes } from '../config/tokens.js';
+import { sendEmail, sendPupilApprovalEmail } from '../services/email.service.js';
+import Config from '../config/config.js';
 
 const AdminController = {
   async approvePupilRequest(req: any, res: any): Promise<void> {

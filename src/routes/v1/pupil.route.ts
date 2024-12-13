@@ -1,8 +1,8 @@
 import express from 'express';
-import validate from '../../middlewares/validate';
-import pupilValidation from '../../validations/pupil.validation';
-import { auth } from '../../middlewares/auth';
-import PupilController from '../../controllers/pupil.controller';
+import validate from '../../middlewares/validate.js';
+import pupilValidation from '../../validations/pupil.validation.js';
+import { auth } from '../../middlewares/auth.js';
+import PupilController from '../../controllers/pupil.controller.js';
 
 const router = express.Router();
 

@@ -1,10 +1,10 @@
 import httpStatus from 'http-status';
-import pupilService from '../services/pupil.service';
-import tokenService from '../services/token.service';
-import { tokenTypes, userTypes } from '../config/tokens';
-import { IPupil, Pupil } from '../models/pupil.model';
-import { ApiError } from '../utils/ApiError';
-import { sendPupilApprovalEmail } from '../services/email.service';
+import pupilService from '../services/pupil.service.js';
+import tokenService from '../services/token.service.js';
+import { tokenTypes, userTypes } from '../config/tokens.js';
+import { IPupil, Pupil } from '../models/pupil.model.js';
+import { ApiError } from '../utils/ApiError.js';
+import { sendPupilApprovalEmail } from '../services/email.service.js';
 // import catchAsync from '../utils/catchAsync';
 // import { pupilService, emailService, tokenService } from '../services'
 
