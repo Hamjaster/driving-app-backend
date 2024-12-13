@@ -17,7 +17,7 @@ export const PupilController = {
 
       // Send approval to admin
       const approvalToken = tokenService.generateToken(pupil.id, tokenTypes.VERIFY_PUPIL, userTypes.PUPIL);
-      sendPupilApprovalEmail(pupil.firstName, 'hamzashah.dev@gmail.com', approvalToken);
+      sendPupilApprovalEmail(pupil.firstName, 'ahmedrazakhank112@gmail.com', approvalToken);
 
       res.status(httpStatus.CREATED).send({ message: 'You approval request have been sent to admin' });
     } catch (error: any) {
