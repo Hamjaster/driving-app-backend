@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import app from './app.js';
 import config from './config/config.js';
 import logger from './config/logger.js';
+
 // console.log(config, 'config obbject');
 let server: any;
 mongoose.connect(config.mongoose.url, config.mongoose.options).then(() => {
