@@ -14,7 +14,16 @@ if (config.env !== 'test') {
 
 export const sendEmail = async (to: string, subject: string, text: string, html?: string) => {
   const msg = { from: 'hamzasepal@gmail.com', to, subject, text, html };
-  await transport.sendMail(msg);
+  await new Promise((resolve, reject) => {
+    transport.sendMail(msg, (err, info) => {
+      if (err) {
+        console.error(err);
+        reject(err);
+      } else {
+        resolve(info);
+      }
+    });
+  });
 };
 
 export const sendResetPasswordEmail = async (to, token) => {
