@@ -61,13 +61,10 @@ const Config = {
       user: envVars.SMTP_USERNAME,
       pass: envVars.SMTP_PASSWORD,
     },
-    tls: {
-      ciphers: 'SSLv3',
-    },
-    port: 587,
+
     // from: envVars.EMAIL_FROM,
     secure: false,
-    // tls: { rejectUnauthorized: false },
+    tls: { rejectUnauthorized: false },
   },
   otpPupilEmailText: (otp: string) => `<html>
 <body style="font-family: Arial, sans-serif; background-color: #f9f9f9; margin: 0; padding: 0;">
