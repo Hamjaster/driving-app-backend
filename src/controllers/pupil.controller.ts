@@ -7,6 +7,7 @@ import { ApiError } from '../utils/ApiError.js';
 import { sendPupilApprovalEmail, sendResetPasswordEmail } from '../services/email.service.js';
 import { error } from 'console';
 import { hashPassword, verifyPassword } from '../utils/lib.js';
+import Config from '../config/config.js';
 
 // import catchAsync from '../utils/catchAsync';
 // import { pupilService, emailService, tokenService } from '../services'
@@ -20,7 +21,7 @@ export const PupilController = {
 
       // Send approval to admin
       const approvalToken = tokenService.generateToken(pupil.id, tokenTypes.VERIFY_PUPIL, userTypes.PUPIL);
-      await sendPupilApprovalEmail(pupil.firstName, 'hamzashah.dev@gmail.com', approvalToken);
+      await sendPupilApprovalEmail(pupil.firstName, Config.adminEmail, approvalToken);
 
       res.status(httpStatus.CREATED).send({ message: 'You approval request have been sent to admin' });
     } catch (error: any) {
