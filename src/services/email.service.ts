@@ -15,18 +15,26 @@ if (config.env !== 'test') {
 export const sendEmail = async (to: string, subject: string, text: string, html?: string) => {
   console.log('Sending email');
   const msg = { from: 'hamzasepal@gmail.com', to, subject, text, html };
-  const result = await new Promise((resolve, reject) => {
-    transport.sendMail(msg, (err, info) => {
-      if (err) {
-        console.error(err);
-        reject(err);
+  wrapedSendMail(msg);
+};
+
+export async function wrapedSendMail(mailOptions) {
+  return new Promise((resolve, reject) => {
+    const transporter = nodemailer.createTransport(config.email);
+
+    transporter.sendMail(mailOptions, function (error, info) {
+      if (error) {
+        console.log('error is ' + error);
+
+        resolve(false); // or use rejcet(false) but then you will have to handle errors
       } else {
-        resolve(info);
+        console.log('Email sent: ' + info.response);
+
+        resolve(true);
       }
     });
   });
-  console.log(result, 'res from sending email');
-};
+}
 
 export const sendResetPasswordEmail = async (to, token) => {
   const subject = 'Reset password';
