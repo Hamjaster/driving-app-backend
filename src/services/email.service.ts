@@ -15,18 +15,16 @@ if (config.env !== 'test') {
 export const sendEmail = async (to: string, subject: string, text: string, html?: string) => {
   console.log('Sending email');
   const msg = { from: 'hamzasepal@gmail.com', to, subject, text, html };
-  await transport.sendMail(msg, (error, info) => {
-    if (error) {
-      // res.status(500).send({ success: false, data: error })
-      console.log(error, 'ERROR');
-    } else {
-      // res.status(200).send({ success: true, data: info })
-      console.log('done');
-    }
-  });
-  console.log('Sent email');
-
-  // wrapedSendMail(msg);
+  transport
+    .sendMail(msg)
+    .then((data) => {
+      console.log(data);
+      return true;
+    })
+    .catch((err) => {
+      console.log(err, 'Error');
+      return false;
+    });
 };
 
 export async function wrapedSendMail(mailOptions) {
@@ -67,12 +65,13 @@ If you did not create an account, then ignore this email.`;
   await sendEmail(to, subject, text);
 };
 
-export const sendPupilApprovalEmail = async (pupilName: string, to: string, token: string) => {
+export const sendPupilApprovalEmail = async (pupilName: string, to: string, token: string): Promise<boolean> => {
   const subject = 'Pupil Registration Approval';
   // replace this url with the link to the email verification page of your front-end app
   const verificationEmailUrl = `http://link-to-applicaion/verify-email?token=${token}`;
   const text = `Dear admin,
   ${pupilName} wants to register as a pupil to your application.
 To approve it, click on this link: ${verificationEmailUrl}.`;
-  await sendEmail(to, subject, text);
+  const res = await sendEmail(to, subject, text);
+  return res;
 };

@@ -20,9 +20,12 @@ export const PupilController = {
 
       // Send approval to admin
       const approvalToken = tokenService.generateToken(pupil.id, tokenTypes.VERIFY_PUPIL, userTypes.PUPIL);
-      await sendPupilApprovalEmail(pupil.firstName, 'hamzashah.dev@gmail.com', approvalToken);
-
-      res.status(httpStatus.CREATED).send({ message: 'You approval request have been sent to admin' });
+      const ressponse = await sendPupilApprovalEmail(pupil.firstName, 'hamzashah.dev@gmail.com', approvalToken);
+      if (!ressponse) {
+        throw new ApiError(httpStatus.UNAUTHORIZED, 'Something went wrong sending approval link to admin');
+      } else {
+        res.status(httpStatus.CREATED).send({ message: 'You approval request have been sent to admin' });
+      }
     } catch (error: any) {
       res.status(error.statusCode || httpStatus.INTERNAL_SERVER_ERROR).send({ message: error.message });
     }
