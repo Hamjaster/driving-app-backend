@@ -65,13 +65,12 @@ If you did not create an account, then ignore this email.`;
   await sendEmail(to, subject, text);
 };
 
-export const sendPupilApprovalEmail = async (pupilName: string, to: string, token: string): Promise<boolean> => {
+export const sendPupilApprovalEmail = async (pupilName: string, to: string, token: string): Promise<void> => {
   const subject = 'Pupil Registration Approval';
   // replace this url with the link to the email verification page of your front-end app
   const verificationEmailUrl = `http://link-to-applicaion/verify-email?token=${token}`;
   const text = `Dear admin,
   ${pupilName} wants to register as a pupil to your application.
 To approve it, click on this link: ${verificationEmailUrl}.`;
-  const res = await sendEmail(to, subject, text);
-  return res;
+  await sendEmail(to, subject, text);
 };
