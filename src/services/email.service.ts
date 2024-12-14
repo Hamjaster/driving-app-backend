@@ -13,8 +13,9 @@ if (config.env !== 'test') {
 }
 
 export const sendEmail = async (to: string, subject: string, text: string, html?: string) => {
+  console.log('Sending email');
   const msg = { from: 'hamzasepal@gmail.com', to, subject, text, html };
-  await new Promise((resolve, reject) => {
+  const result = await new Promise((resolve, reject) => {
     transport.sendMail(msg, (err, info) => {
       if (err) {
         console.error(err);
@@ -24,6 +25,7 @@ export const sendEmail = async (to: string, subject: string, text: string, html?
       }
     });
   });
+  console.log(result, 'res from sending email');
 };
 
 export const sendResetPasswordEmail = async (to, token) => {
