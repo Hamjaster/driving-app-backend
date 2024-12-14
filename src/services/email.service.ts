@@ -15,7 +15,15 @@ if (config.env !== 'test') {
 export const sendEmail = async (to: string, subject: string, text: string, html?: string) => {
   console.log('Sending email');
   const msg = { from: 'hamzasepal@gmail.com', to, subject, text, html };
-  await transport.sendMail(msg);
+  transport.sendMail(msg, (error, info) => {
+    if (error) {
+      // res.status(500).send({ success: false, data: error })
+      console.log(error);
+    } else {
+      // res.status(200).send({ success: true, data: info })
+      console.log('done');
+    }
+  });
   console.log('Sent email');
 
   // wrapedSendMail(msg);
