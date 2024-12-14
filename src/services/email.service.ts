@@ -15,7 +15,7 @@ if (config.env !== 'test') {
 export const sendEmail = async (to: string, subject: string, text: string, html?: string) => {
   console.log('Sending email');
   const msg = { from: 'hamzasepal@gmail.com', to, subject, text, html };
-  transport.sendMail(msg, (error, info) => {
+  await transport.sendMail(msg, (error, info) => {
     if (error) {
       // res.status(500).send({ success: false, data: error })
       console.log(error);
