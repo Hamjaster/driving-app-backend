@@ -65,7 +65,12 @@ const tokenServices = {
     const payload = jwt.verify(token, config.jwt.secret);
     console.log(payload, 'payload', token, 'token');
     let userId = payload.sub as string;
-    const tokenDoc = await Token.findOne({ token, type, user: userId, blacklisted: false, userType });
+    let tokenDoc;
+    if (userType) {
+      tokenDoc = await Token.findOne({ token, type, user: userId, blacklisted: false, userType });
+    } else {
+      tokenDoc = await Token.findOne({ token, type, user: userId, blacklisted: false });
+    }
     if (!tokenDoc) {
       throw new Error('Token not found');
     }
