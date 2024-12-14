@@ -18,7 +18,7 @@ export const sendEmail = async (to: string, subject: string, text: string, html?
   await transport.sendMail(msg, (error, info) => {
     if (error) {
       // res.status(500).send({ success: false, data: error })
-      console.log(error);
+      console.log(error, 'ERROR');
     } else {
       // res.status(200).send({ success: true, data: info })
       console.log('done');
