@@ -50,6 +50,7 @@
     "prettier"
   ],
   "dependencies": {
+    "@imgix/js-core": "^3.8.0",
     "@types/mongoose": "^5.11.97",
     "bcryptjs": "^2.4.3",
     "cloudinary": "^2.5.1",

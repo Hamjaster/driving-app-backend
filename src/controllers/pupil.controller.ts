@@ -5,16 +5,23 @@ import { tokenTypes, userTypes } from '../config/tokens.js';
 import { IPupil, Pupil } from '../models/pupil.model.js';
 import { ApiError } from '../utils/ApiError.js';
 import { sendPupilApprovalEmail, sendResetPasswordEmail } from '../services/email.service.js';
+import multer from 'multer';
 import { error } from 'console';
-import { hashPassword, uploadImageCloudinary, verifyPassword } from '../utils/lib.js';
+import { hashPassword, verifyPassword } from '../utils/lib.js';
 import Config from '../config/config.js';
 import pupilServices from '../services/pupil.service.js';
 import { IncomingForm } from 'formidable';
-import { cloudinary } from '../utils/cloudinary.js';
-
+// import cloudinary from '../utils/cloudinary.js';
+import { v2 as cloudinary } from 'cloudinary';
+import fs from 'fs';
 // import catchAsync from '../utils/catchAsync';
 // import { pupilService, emailService, tokenService } from '../services'
-
+cloudinary.config({
+  cloud_name: 'daadraj4k',
+  api_key: '885723874342741',
+  api_secret: 'hOEQi88UIGhsdxsdtmaZsuEQs_Q',
+  secure: true,
+});
 export const PupilController = {
   async register(req: any, res: any): Promise<void> {
     try {
@@ -48,42 +55,24 @@ export const PupilController = {
   },
   async uploadAvatar(req: any, res: any): Promise<void> {
     try {
-      console.log('uploading avatar');
-      let photo;
+      console.log(req.file, 'req.file');
       const pupilID = req.user._id;
-
-      const form = new IncomingForm();
-
-      form.parse(req, async (err, fields, files) => {
-        if (err) {
-          console.error('Error parsing file:', err);
-          return res.status(500).json({ message: 'Error parsing file' });
-        }
-
-        try {
-          const file = files.file; // 'file' is the key sent in the formData
-          const result = await cloudinary.uploader.upload(file.filepath, {
-            folder: 'pupil-profile-pictures', // Optional folder name in Cloudinary
-          });
-          photo = result.secure_url;
-          // Respond with the Cloudinary URL
-          // return res.status(200).json({ url: result.secure_url });
-        } catch (uploadError) {
-          console.error('Error uploading to Cloudinary:', uploadError);
-          return res.status(500).json({ message: 'Error uploading file' });
-        }
+      const result = await cloudinary.uploader.upload(req.file.path, {
+        resource_type: 'auto', // Automatically detect file type (image, video, etc.)
+        folder: 'driving-app-media', // Optional: specify folder in Cloudinary
       });
-
-      // Code for uplaoding file for req.user
-      const pupil = await Pupil.findByIdAndUpdate(pupilID, { profilePicture: photo }, { new: true, runValidators: true });
-      console.log(photo, 'photo', pupilID, 'pupilID');
+      const pupil = await Pupil.findByIdAndUpdate(
+        pupilID,
+        { profilePicture: result.secure_url },
+        { new: true, runValidators: true }
+      );
       if (!pupil) {
         return res.status(httpStatus.NOT_FOUND).send({ message: 'No Pupil Found' });
       }
 
       res.status(httpStatus.CREATED).send({ message: 'Profile Photo Uploaded' });
-    } catch (error: any) {
-      res.status(error.statusCode || httpStatus.INTERNAL_SERVER_ERROR).send({ message: error.message });
+    } catch (error) {
+      res.status(httpStatus.EXPECTATION_FAILED).send({ message: error.message });
     }
   },
 
