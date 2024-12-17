@@ -6,7 +6,10 @@ import PupilController from '../../controllers/pupil.controller.js';
 import multer from 'multer';
 // import upload from '../../utils/multer.js';
 const router = express.Router();
-const upload = multer({ dest: 'files/' });
+const storage = multer.memoryStorage();
+
+const upload = multer({ storage });
+
 router.post('/register', validate(pupilValidation.register), PupilController.register);
 router.post('/edit', auth(), validate(pupilValidation.editDetails), PupilController.editDetails);
 router.post('/login', validate(pupilValidation.login), PupilController.login);
