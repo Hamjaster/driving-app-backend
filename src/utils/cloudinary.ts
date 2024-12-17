@@ -1,4 +1,5 @@
 import { v2 } from 'cloudinary';
+import { IncomingForm } from 'formidable';
 
 export const cloudinary = v2.config({
   cloud_name: 'daadraj4k',

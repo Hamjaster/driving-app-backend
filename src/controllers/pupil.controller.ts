@@ -9,6 +9,8 @@ import { error } from 'console';
 import { hashPassword, uploadImageCloudinary, verifyPassword } from '../utils/lib.js';
 import Config from '../config/config.js';
 import pupilServices from '../services/pupil.service.js';
+import { IncomingForm } from 'formidable';
+import { cloudinary } from '../utils/cloudinary.js';
 
 // import catchAsync from '../utils/catchAsync';
 // import { pupilService, emailService, tokenService } from '../services'
@@ -47,8 +49,30 @@ export const PupilController = {
   async uploadAvatar(req: any, res: any): Promise<void> {
     try {
       console.log('uploading avatar');
-      const photo = req.file.path;
+      let photo;
       const pupilID = req.user._id;
+
+      const form = new IncomingForm();
+
+      form.parse(req, async (err, fields, files) => {
+        if (err) {
+          console.error('Error parsing file:', err);
+          return res.status(500).json({ message: 'Error parsing file' });
+        }
+
+        try {
+          const file = files.file; // 'file' is the key sent in the formData
+          const result = await cloudinary.uploader.upload(file.filepath, {
+            folder: 'pupil-profile-pictures', // Optional folder name in Cloudinary
+          });
+          photo = result.secure_url;
+          // Respond with the Cloudinary URL
+          // return res.status(200).json({ url: result.secure_url });
+        } catch (uploadError) {
+          console.error('Error uploading to Cloudinary:', uploadError);
+          return res.status(500).json({ message: 'Error uploading file' });
+        }
+      });
 
       // Code for uplaoding file for req.user
       const pupil = await Pupil.findByIdAndUpdate(pupilID, { profilePicture: photo }, { new: true, runValidators: true });
