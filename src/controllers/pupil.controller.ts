@@ -57,7 +57,7 @@ export const PupilController = {
     try {
       console.log(req.file, 'req.file');
       const pupilID = req.user._id;
-      const result = await cloudinary.uploader.upload(req.file.path, {
+      const result = await cloudinary.uploader.upload(req.file.buffer, {
         resource_type: 'auto', // Automatically detect file type (image, video, etc.)
         folder: 'driving-app-media', // Optional: specify folder in Cloudinary
       });
