@@ -3,17 +3,19 @@ import validate from '../../middlewares/validate.js';
 import pupilValidation from '../../validations/pupil.validation.js';
 import { auth } from '../../middlewares/auth.js';
 import PupilController from '../../controllers/pupil.controller.js';
-
+import multer from 'multer';
+import upload from '../../utils/multer.js';
 const router = express.Router();
 
 router.post('/register', validate(pupilValidation.register), PupilController.register);
+router.post('/edit', auth(), validate(pupilValidation.editDetails), PupilController.editDetails);
 router.post('/login', validate(pupilValidation.login), PupilController.login);
 // router.post('/logout', validate(authValidation.logout), PupilController.logout);
 // router.post('/refresh-tokens', validate(authValidation.refreshTokens), PupilController.refreshTokens);
 router.post('/forgot-password', validate(pupilValidation.forgotPassword), PupilController.forgotPassword);
 router.post('/change-forgotten-password', validate(pupilValidation.resetPassword), PupilController.changeForgottenPassword);
 // router.post('/reset-password', validate(authValidation.resetPassword), PupilController.resetPassword);
-// router.post('/send-verification-email', auth(), PupilController.sendVerificationEmail);
+router.post('/uploadAvatar', auth(), upload.single('photo'), PupilController.uploadAvatar);
 // router.post('/verify-email', validate(authValidation.verifyEmail), PupilController.verifyEmail);
 
 export default router;

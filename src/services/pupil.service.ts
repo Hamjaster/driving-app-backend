@@ -23,6 +23,23 @@ const pupilServices = {
     pupil.save();
     return pupil;
   },
+  async editPupil(pupilId: string, updatedData: IPupil): Promise<IPupil> {
+    if (!pupilId) {
+      throw new ApiError(httpStatus.BAD_REQUEST, 'Pupil ID not given');
+    }
+
+    // Validate the pupil exists
+    const pupil = await Pupil.findById(pupilId);
+    if (!pupil) {
+      throw new ApiError(httpStatus.NOT_FOUND, 'Pupil Not Found');
+    }
+    const updatedPupil = await Pupil.findByIdAndUpdate(pupilId, updatedData, {
+      new: true, // Return the updated document
+      runValidators: true, // Ensure validation rules are respected
+    });
+
+    return updatedPupil;
+  },
 
   getAllPupils(): Promise<IPupil[]> {
     return Pupil.find() as any;

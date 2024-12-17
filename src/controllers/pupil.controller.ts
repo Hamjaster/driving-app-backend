@@ -6,8 +6,9 @@ import { IPupil, Pupil } from '../models/pupil.model.js';
 import { ApiError } from '../utils/ApiError.js';
 import { sendPupilApprovalEmail, sendResetPasswordEmail } from '../services/email.service.js';
 import { error } from 'console';
-import { hashPassword, verifyPassword } from '../utils/lib.js';
+import { hashPassword, uploadImageCloudinary, verifyPassword } from '../utils/lib.js';
 import Config from '../config/config.js';
+import pupilServices from '../services/pupil.service.js';
 
 // import catchAsync from '../utils/catchAsync';
 // import { pupilService, emailService, tokenService } from '../services'
@@ -18,25 +19,42 @@ export const PupilController = {
       const body = req.body as IPupil;
       const pupil = await pupilService.createPupil(body);
       // const token = tokenService.generateToken(pupil.id, tokenTypes.ACCESS);
-
+      console.log(pupil.id, 'PUPIL ID');
       // Send approval to admin
       const approvalToken = tokenService.generateToken(pupil.id, tokenTypes.VERIFY_PUPIL, userTypes.PUPIL);
-      await sendPupilApprovalEmail(pupil.firstName, 'ahmedrazakhank112@gmail.com', approvalToken);
+      await sendPupilApprovalEmail(pupil.firstName, 'hamzashah.dev@gmail.com', approvalToken);
 
       res.status(httpStatus.CREATED).send({ message: 'You approval request have been sent to admin' });
     } catch (error: any) {
       res.status(error.statusCode || httpStatus.INTERNAL_SERVER_ERROR).send({ message: error.message });
     }
   },
+  async editDetails(req: any, res: any): Promise<void> {
+    try {
+      const id = req.user._id; // ID of the pupil to update
+      const updateData = req.body;
+
+      const updatedPupil = await pupilServices.editPupil(id, updateData);
+
+      res.status(httpStatus.OK).send({
+        message: 'Pupil details updated successfully',
+        data: updatedPupil,
+      });
+    } catch (error: any) {
+      res.status(httpStatus.INTERNAL_SERVER_ERROR).send({ message: error.message });
+    }
+  },
   async uploadAvatar(req: any, res: any): Promise<void> {
     try {
-      const body = req.body as IPupil;
-      const pupil = await pupilService.createPupil(body);
-      // const token = tokenService.generateToken(pupil.id, tokenTypes.ACCESS);
+      const photo = req.file.path;
+      const pupilID = req.user._id;
 
-      // Send approval to admin
-      const approvalToken = tokenService.generateToken(pupil.id, tokenTypes.VERIFY_PUPIL, userTypes.PUPIL);
-      await sendPupilApprovalEmail(pupil.firstName, 'ahmedrazakhank112@gmail.com', approvalToken);
+      // Code for uplaoding file for req.user
+      const pupil = await Pupil.findByIdAndUpdate(pupilID, { profilePicture: photo }, { new: true, runValidators: true });
+      console.log(photo, 'photo', pupilID, 'pupilID');
+      if (!pupil) {
+        return res.status(httpStatus.NOT_FOUND).send({ message: 'No Pupil Found' });
+      }
 
       res.status(httpStatus.CREATED).send({ message: 'Profile Photo Uploaded' });
     } catch (error: any) {
@@ -68,6 +86,7 @@ export const PupilController = {
           { new: true } // Return the updated document
         );
       }
+      console.log(pupil.id, 'ID for pupil');
       const token = tokenService.generateToken(pupil.id, tokenTypes.ACCESS, userTypes.PUPIL);
       res.status(httpStatus.OK).send({ pupil, token });
     } catch (error: any) {

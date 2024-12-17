@@ -27,7 +27,9 @@ export function convertToDateObject(mmYY) {
 }
 
 export async function uploadImageCloudinary(file: File) {
+  console.log(file, 'FILE');
   const arrayBuffer = await file.arrayBuffer();
+  console.log(arrayBuffer, 'arrayBuffer');
   const buffer = Buffer.from(arrayBuffer); //  <-- convert to Buffer
 
   return new Promise((resolve, reject) => {

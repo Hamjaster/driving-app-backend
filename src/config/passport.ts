@@ -13,11 +13,30 @@ const jwtVerify = async (payload, done) => {
     if (payload.type !== tokenTypes.ACCESS) {
       throw new Error('Invalid token type');
     }
-    const user = await Pupil.findById(payload.sub);
+
+    let user;
+    switch (payload.userType) {
+      case 'pupil':
+        user = await Pupil.findById(payload.sub);
+        break;
+      case 'instructor':
+        user = null;
+        // user = await Instructor.findById(payload.sub);
+        break;
+      case 'admin':
+        user = null;
+        // user = await Admin.findById(payload.sub);
+        break;
+      default:
+        throw new Error('Invalid user type');
+    }
+
     if (!user) {
       return done(null, false);
     }
-    done(null, user);
+
+    // Add the user type to the `req.user` object for downstream use
+    done(null, { ...user.toObject(), userType: payload.userType });
   } catch (error) {
     done(error, false);
   }

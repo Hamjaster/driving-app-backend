@@ -42,12 +42,14 @@ const tokenServices = {
         iat: moment().unix(),
         exp: expires.unix(),
         type,
+        userType,
       };
     } else {
       payload = {
         sub: userId,
         iat: moment().unix(),
         type,
+        userType,
       };
     }
     const tokken = jwt.sign(payload, secret);
@@ -57,7 +59,7 @@ const tokenServices = {
 
   generateOTP: (userId: string, userType: string) => {
     const token = generateOTPUtil(6);
-    tokenServices.saveToken(token, userId, new Date(Date.now() + 1000), tokenTypes.OTP, userType);
+    tokenServices.saveToken(token, userId, moment(new Date(Date.now() + 1000)), tokenTypes.OTP, userType);
     return token;
   },
 
