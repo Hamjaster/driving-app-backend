@@ -18,7 +18,7 @@ const pupilServices = {
     }
 
     pupilBody.password = await hashPassword(pupilBody.password);
-    pupilBody.cardDetails.expiry = convertToDateObject(pupilBody.cardDetails.expiry);
+    // pupilBody.cardDetails.expiry = convertToDateObject(pupilBody.cardDetails.expiry);
     const pupil = new Pupil(pupilBody);
     pupil.save();
     return pupil;
