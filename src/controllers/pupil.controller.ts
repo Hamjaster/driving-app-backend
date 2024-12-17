@@ -46,6 +46,7 @@ export const PupilController = {
   },
   async uploadAvatar(req: any, res: any): Promise<void> {
     try {
+      console.log('uploading avatar');
       const photo = req.file.path;
       const pupilID = req.user._id;
 
