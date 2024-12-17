@@ -14,6 +14,7 @@ import { IncomingForm } from 'formidable';
 // import cloudinary from '../utils/cloudinary.js';
 import { v2 as cloudinary } from 'cloudinary';
 import fs from 'fs';
+import streamifier from 'streamifier';
 // import catchAsync from '../utils/catchAsync';
 // import { pupilService, emailService, tokenService } from '../services'
 cloudinary.config({
@@ -57,20 +58,27 @@ export const PupilController = {
     try {
       console.log(req.file, 'req.file');
       const pupilID = req.user._id;
-      const result = await cloudinary.uploader.upload(req.file.buffer, {
-        resource_type: 'auto', // Automatically detect file type (image, video, etc.)
-        folder: 'driving-app-media', // Optional: specify folder in Cloudinary
-      });
-      const pupil = await Pupil.findByIdAndUpdate(
-        pupilID,
-        { profilePicture: result.secure_url },
-        { new: true, runValidators: true }
-      );
-      if (!pupil) {
-        return res.status(httpStatus.NOT_FOUND).send({ message: 'No Pupil Found' });
-      }
 
-      res.status(httpStatus.CREATED).send({ message: 'Profile Photo Uploaded' });
+      let cld_upload_stream = cloudinary.uploader.upload_stream(
+        {
+          folder: 'driving-app-media',
+        },
+        async function (error, result) {
+          console.log(error, result, 'result OR error');
+          const pupil = await Pupil.findByIdAndUpdate(
+            pupilID,
+            { profilePicture: result.secure_url },
+            { new: true, runValidators: true }
+          );
+          if (!pupil) {
+            return res.status(httpStatus.NOT_FOUND).send({ message: 'No Pupil Found' });
+          }
+
+          res.status(httpStatus.CREATED).send({ message: 'Profile Photo Uploaded' });
+        }
+      );
+
+      streamifier.createReadStream(req.file.buffer).pipe(cld_upload_stream);
     } catch (error) {
       res.status(httpStatus.EXPECTATION_FAILED).send({ message: error.message });
     }
