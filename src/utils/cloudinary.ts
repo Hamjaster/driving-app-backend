@@ -1,10 +1,8 @@
-import { v2 as cloudinary } from 'cloudinary';
+import { v2 } from 'cloudinary';
 
-let cloud = cloudinary.config({
+export const cloudinary = v2.config({
   cloud_name: 'daadraj4k',
   api_key: '885723874342741',
   api_secret: 'hOEQi88UIGhsdxsdtmaZsuEQs_Q',
   secure: true,
 });
-
-export default cloud;

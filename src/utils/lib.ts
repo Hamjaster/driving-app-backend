@@ -25,21 +25,3 @@ export function convertToDateObject(mmYY) {
   // Create a Date object with the first day of the month
   return new Date(fullYear, month - 1, 1);
 }
-
-export async function uploadImageCloudinary(file: File) {
-  console.log(file, 'FILE');
-  const arrayBuffer = await file.arrayBuffer();
-  console.log(arrayBuffer, 'arrayBuffer');
-  const buffer = Buffer.from(arrayBuffer); //  <-- convert to Buffer
-
-  return new Promise((resolve, reject) => {
-    cloudinary.uploader.upload_stream({ resource_type: 'image' }, onDone).end(buffer);
-
-    function onDone(error, result) {
-      if (error) {
-        return reject({ success: false, error });
-      }
-      return resolve({ success: true, result });
-    }
-  });
-}
