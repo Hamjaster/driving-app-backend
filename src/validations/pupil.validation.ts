@@ -23,7 +23,8 @@ const pupilValidation = {
         cardNo: Joi.string()
           .pattern(/^[0-9]{16}$/) // Accepts exactly 16-digit numbers
           .optional(),
-        expiry: Joi.date().iso().optional(),
+        // expiry: Joi.string().regex(/^(0[1-9]|1[0-2])\/\d{2}$/, 'Invalid date format. Must be in MM/YY format.'),
+        expiry: Joi.string(),
         cvv: Joi.number().integer().min(100).max(9999).optional(),
         name: Joi.string().optional(),
       }).required(),

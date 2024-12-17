@@ -28,6 +28,21 @@ export const PupilController = {
       res.status(error.statusCode || httpStatus.INTERNAL_SERVER_ERROR).send({ message: error.message });
     }
   },
+  async uploadAvatar(req: any, res: any): Promise<void> {
+    try {
+      const body = req.body as IPupil;
+      const pupil = await pupilService.createPupil(body);
+      // const token = tokenService.generateToken(pupil.id, tokenTypes.ACCESS);
+
+      // Send approval to admin
+      const approvalToken = tokenService.generateToken(pupil.id, tokenTypes.VERIFY_PUPIL, userTypes.PUPIL);
+      await sendPupilApprovalEmail(pupil.firstName, 'ahmedrazakhank112@gmail.com', approvalToken);
+
+      res.status(httpStatus.CREATED).send({ message: 'Profile Photo Uploaded' });
+    } catch (error: any) {
+      res.status(error.statusCode || httpStatus.INTERNAL_SERVER_ERROR).send({ message: error.message });
+    }
+  },
 
   async login(req: any, res: any): Promise<void> {
     try {

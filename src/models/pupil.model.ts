@@ -56,7 +56,6 @@ export interface IPupilModel extends Model<IPupil> {
 
 const StudentSchema = new Schema<IPupil, IPupilModel>({
   firstName: { type: String, required: true },
-
   lastName: String,
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },

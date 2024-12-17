@@ -6,7 +6,7 @@ import { tokenTypes } from '../config/tokens.js';
 import { ApiError } from '../utils/ApiError.js';
 import { IPupil, Pupil } from '../models/pupil.model.js';
 import { Document } from 'mongoose';
-import { hashPassword } from '../utils/lib.js';
+import { convertToDateObject, hashPassword } from '../utils/lib.js';
 
 const pupilServices = {
   async createPupil(pupilBody: IPupil): Promise<IPupil> {
@@ -18,7 +18,7 @@ const pupilServices = {
     }
 
     pupilBody.password = await hashPassword(pupilBody.password);
-
+    pupilBody.cardDetails.expiry = convertToDateObject(pupilBody.cardDetails.expiry);
     const pupil = new Pupil(pupilBody);
     pupil.save();
     return pupil;

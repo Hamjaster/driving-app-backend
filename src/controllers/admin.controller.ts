@@ -21,7 +21,7 @@ const AdminController = {
       }
       // Send OTP to Pupil for login
       const otp = tokenServices.generateOTP(updatedPupil.id, userTypes.PUPIL);
-      sendEmail(updatedPupil.email, 'Your OTP for login', '', Config.otpPupilEmailText(otp));
+      await sendEmail(updatedPupil.email, 'Your OTP for login', '', Config.otpPupilEmailText(otp));
 
       res.status(httpStatus.ACCEPTED).send({ message: 'Registration of Pupil is approved' });
     } catch (error: any) {
