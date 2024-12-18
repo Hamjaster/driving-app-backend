@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 const { Schema, model, Model } = mongoose;
-import { toJSON } from './plugins/toJSON.plugin';
-import { paginate } from './plugins/paginate.plugin';
+import { toJSON } from './plugins/toJSON.plugin.js';
+import { paginate } from './plugins/paginate.plugin.js';
 
 export interface IInstructor extends Document {
   id: string;
