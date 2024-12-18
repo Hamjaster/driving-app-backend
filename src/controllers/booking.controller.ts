@@ -1,5 +1,5 @@
 import { Pupil } from '../models/pupil.model.js';
-import { Instructor } from '../models/instructor.model';
+import { Instructor } from '../models/instructor.model.js';
 import { Booking } from '../models/booking.model.js';
 import { sendEmail } from '../services/email.service.js';
 import Config from '../config/config.js';
