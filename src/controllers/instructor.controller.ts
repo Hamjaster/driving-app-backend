@@ -1,6 +1,6 @@
-import { Booking } from '../models/booking.model';
+import { Booking } from '../models/booking.model.js';
 
-import { IInstructor, Instructor } from '../models/instructor.model';
+import { IInstructor, Instructor } from '../models/instructor.model.js';
 
 const instructorController = {
   createInstructor: async (req: any, res: any) => {

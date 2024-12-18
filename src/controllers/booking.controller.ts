@@ -1,10 +1,10 @@
-import { Pupil } from '../models/pupil.model';
+import { Pupil } from '../models/pupil.model.js';
 import { Instructor } from '../models/instructor.model';
-import { Booking } from '../models/booking.model';
-import { sendEmail } from '../services/email.service';
-import Config from '../config/config';
-import tokenServices from '../services/token.service';
-import { tokenTypes, userTypes } from '../config/tokens';
+import { Booking } from '../models/booking.model.js';
+import { sendEmail } from '../services/email.service.js';
+import Config from '../config/config.js';
+import tokenServices from '../services/token.service.js';
+import { tokenTypes, userTypes } from '../config/tokens.js';
 import httpStatus from 'http-status';
 
 const bookingController = {
