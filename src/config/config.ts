@@ -38,7 +38,7 @@ if (error) {
 
 const Config = {
   env: envVars.NODE_ENV,
-  adminEmail: envVars.ADMIN_EMAIL,
+  adminEmail: 'developermakethings@gmail.com',
   port: envVars.PORT,
   mongoose: {
     url: envVars.MONGODB_URL + (envVars.NODE_ENV === 'test' ? '-test' : ''),

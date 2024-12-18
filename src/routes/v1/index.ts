@@ -1,6 +1,8 @@
 import express from 'express';
 import pupilRoutes from './pupil.route.js';
 import adminRoutes from './admin.route.js';
+import bookingRoutes from './booking.route.js';
+import instructorRoutes from './instructor.route.js';
 import config from '../../config/config.js';
 
 const router = express.Router();
@@ -13,6 +15,14 @@ const defaultRoutes = [
   {
     path: '/admin',
     route: adminRoutes,
+  },
+  {
+    path: '/booking',
+    route: bookingRoutes,
+  },
+  {
+    path: '/instructor',
+    route: instructorRoutes,
   },
   // {
   //   path: '/users',

@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs';
 import { paginate } from './plugins/paginate.plugin.js';
 import { toJSON } from './plugins/toJSON.plugin.js';
 import { roles } from '../config/roles.js';
-import mongoose from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 const { Schema, model, Model } = mongoose;
 
 export interface IPupil {

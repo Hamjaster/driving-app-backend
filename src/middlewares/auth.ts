@@ -1,32 +1,28 @@
 import passport from 'passport';
 import httpStatus from 'http-status';
 import { ApiError } from '../utils/ApiError.js';
-import { roleRights } from '../config/roles.js';
 
 const verifyCallback =
-  (req: any, resolve: any, reject: any, requiredRights: any) => async (err: any, user: any, info: any) => {
+  (req: any, resolve: any, reject: any, onlyFor: string[]) => async (err: any, user: any, info: any) => {
     if (err || info || !user) {
       return reject(new ApiError(httpStatus.UNAUTHORIZED, 'Please authenticate'));
     }
-    console.log(user, 'USER Object in callback');
-    req.user = user;
 
-    // if (requiredRights.length) {
-    //   const userRights = roleRights.get(user.role);
-    //   const hasRequiredRights = requiredRights.every((requiredRight) => userRights.includes(requiredRight));
-    //   if (!hasRequiredRights && req.params.userId !== user.id) {
-    //     return reject(new ApiError(httpStatus.FORBIDDEN, 'Forbidden'));
-    //   }
-    // }
+    req.user = user; // Attach user object to request for downstream use
+    console.log(req.user, 'USER REQUEST IN AUTH');
+    // If specific roles are provided, check if the user's role matches
+    if (onlyFor.length > 0 && !onlyFor.includes(user.userType)) {
+      return reject(new ApiError(httpStatus.FORBIDDEN, 'Forbidden: You do not have access to this resource'));
+    }
 
     resolve();
   };
 
 export const auth =
-  (...requiredRights: any) =>
+  (...onlyFor: string[]) =>
   async (req: any, res: any, next: any) => {
     return new Promise((resolve, reject) => {
-      passport.authenticate('jwt', { session: false }, verifyCallback(req, resolve, reject, requiredRights))(req, res, next);
+      passport.authenticate('jwt', { session: false }, verifyCallback(req, resolve, reject, onlyFor))(req, res, next);
     })
       .then(() => next())
       .catch((err) => next(err));

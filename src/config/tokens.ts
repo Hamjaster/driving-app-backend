@@ -5,6 +5,7 @@ export type TokenType = {
   REFRESH: string;
   VERIFY_PUPIL: string;
   OTP: string;
+  BOOKING_APPROVAL: string;
 };
 
 export type UserType = {
@@ -20,6 +21,7 @@ export const tokenTypes: TokenType = {
   VERIFY_EMAIL: 'verifyEmail',
   VERIFY_PUPIL: 'verifyPupil',
   OTP: 'otp',
+  BOOKING_APPROVAL: 'approveBooking',
 };
 
 export const userTypes: UserType = {
