@@ -16,9 +16,6 @@ const pupilValidation = {
       pickupAddress: Joi.string().optional(),
       billingAddress: Joi.string().optional(),
       postalCode: Joi.number().integer().required(),
-      lessonsType: Joi.string().optional(),
-      instructor: Joi.string().optional(),
-      plan: Joi.number().optional(),
       cardDetails: Joi.object({
         cardNo: Joi.string()
           .pattern(/^[0-9]{16}$/) // Accepts exactly 16-digit numbers

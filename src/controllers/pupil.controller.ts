@@ -117,19 +117,23 @@ export const PupilController = {
   },
 
   async forgotPassword(req: any, res: any) {
-    const { email } = req.body;
-    const pupil = await Pupil.findOne({ email });
+    const pupilId = req.user._id;
+    const pupil = await Pupil.findById(pupilId);
     if (!pupil) {
       throw new ApiError(httpStatus.NOT_FOUND, 'No Such Pupil Registered');
     }
     const resetPasswordToken = await tokenService.generateResetPasswordToken(pupil.id, userTypes.PUPIL);
-    await sendResetPasswordEmail(email, resetPasswordToken);
+    await sendResetPasswordEmail(pupil.email, resetPasswordToken);
     res.status(httpStatus.OK).send({ message: 'Reset Password link sent to email' });
   },
 
   async changeForgottenPassword(req: any, res: any) {
     try {
-      const { token, password } = req.body;
+      const { token, oldPassword, newPassword } = req.body;
+      if (oldPassword === newPassword) {
+        throw new ApiError(httpStatus.BAD_REQUEST, 'New password must be different from the old password');
+      }
+
       const tokenDoc = await tokenService.verifyToken(token, tokenTypes.RESET_PASSWORD, userTypes.PUPIL);
       if (!tokenDoc) {
         throw new ApiError(httpStatus.UNAUTHORIZED, 'Unauthenticated');
@@ -139,9 +143,15 @@ export const PupilController = {
         throw new ApiError(httpStatus.UNAUTHORIZED, 'No Such Pupil Registered');
       }
 
+      // Verify the old password
+      const isPasswordMatch = await verifyPassword(oldPassword, pupilFound.password);
+      if (!isPasswordMatch) {
+        throw new ApiError(httpStatus.UNAUTHORIZED, 'Incorrect old password');
+      }
+
       await Pupil.findByIdAndUpdate(
         pupilFound.id,
-        { password: await hashPassword(password) },
+        { password: await hashPassword(newPassword) },
         { new: true, runValidators: true }
       );
 

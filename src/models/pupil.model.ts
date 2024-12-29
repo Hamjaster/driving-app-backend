@@ -14,9 +14,6 @@ export interface IPupil {
   pickupAddress: string;
   billingAddress: string;
   postalCode: number;
-  lessonsType: 'automatic' | 'manual';
-  instructor: string;
-  plan: 1;
   email: string;
   password: string;
   profilePicture?: string;
@@ -66,9 +63,6 @@ const StudentSchema = new Schema<IPupil, IPupilModel>({
   pickupAddress: String,
   billingAddress: String,
   postalCode: Number,
-  lessonsType: String,
-  instructor: String,
-  plan: Number,
   bookings: [
     {
       instructorId: { type: String, ref: 'ADI', required: true },

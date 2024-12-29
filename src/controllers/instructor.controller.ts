@@ -1,6 +1,8 @@
 import { Booking } from '../models/booking.model.js';
-
 import { IInstructor, Instructor } from '../models/instructor.model.js';
+import httpStatus from 'http-status';
+import instructorService from '../services/instructor.service.js';
+import { ApiError } from '../utils/ApiError.js';
 
 const instructorController = {
   createInstructor: async (req: any, res: any) => {
@@ -59,6 +61,23 @@ const instructorController = {
     } catch (err) {
       console.error(err);
       return res.status(500).json({ success: false, message: 'Server error' });
+    }
+  },
+  getInstructorsByPostalCode: async (req: any, res: any): Promise<void> => {
+    try {
+      const { postalCode } = req.body;
+      if (!postalCode) {
+        throw new ApiError(httpStatus.BAD_REQUEST, 'Postal code is required');
+      }
+
+      const instructors = await instructorService.getInstructorsByPostalCode(postalCode);
+      if (!instructors || instructors.length === 0) {
+        throw new ApiError(httpStatus.NOT_FOUND, 'No instructors found for the given postal code');
+      }
+
+      res.status(httpStatus.OK).send({ instructors });
+    } catch (error: any) {
+      res.status(error.statusCode || httpStatus.INTERNAL_SERVER_ERROR).send({ message: error.message });
     }
   },
 };

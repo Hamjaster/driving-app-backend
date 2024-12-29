@@ -15,6 +15,7 @@ export interface IInstructor extends Document {
   }[]; // An array of dates showing availability
   profilePicture?: string;
   phoneNumber?: string;
+  postalCode: number;
   ratings: {
     pupilId: string;
     rating: number;
@@ -35,6 +36,7 @@ const InstructorSchema = new Schema({
   lastName: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
+  postalCode: { type: Number, required: true },
   availability: [
     {
       date: { type: Date, required: true },
