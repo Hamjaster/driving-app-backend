@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
-import { IPupil } from './pupil.model';
-import { IInstructor } from './instructor.model';
+import { IPupil } from './pupil.model.js';
+import { IInstructor } from './instructor.model.js';
 const { Schema, model, Model } = mongoose;
 export interface IBooking extends Document {
   pupil: IPupil;

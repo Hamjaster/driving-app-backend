@@ -1,9 +1,9 @@
 import httpStatus from 'http-status';
-import Config from '../config/config';
-import { Payment } from '../models/payment.model';
-import { Pupil } from '../models/pupil.model';
-import { Instructor } from '../models/instructor.model';
-import { Booking } from '../models/booking.model';
+import Config from '../config/config.js';
+import { Payment } from '../models/payment.model.js';
+import { Pupil } from '../models/pupil.model.js';
+import { Instructor } from '../models/instructor.model.js';
+import { Booking } from '../models/booking.model.js';
 
 import dotenv from 'dotenv';
 import Stripe from 'stripe';
