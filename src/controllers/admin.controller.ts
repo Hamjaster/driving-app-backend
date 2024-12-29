@@ -51,8 +51,8 @@ const AdminController = {
 
       // If accepted, mark instructor as unavailable for the date
       if (status === 'accepted') {
-        const instructor = await Instructor.findById(booking.instructorId);
-
+        const instructor = await Instructor.findById(booking.instructor);
+        console.log(instructor, 'instructor');
         instructor.availability = instructor.availability.map((availability) => {
           if (new Date(availability.date).toISOString() === new Date(booking.date).toISOString()) {
             availability.isAvailable = false;

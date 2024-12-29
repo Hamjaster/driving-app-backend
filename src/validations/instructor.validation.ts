@@ -1,8 +1,12 @@
 import Joi from 'joi';
 
-export const updateBookingStatusSchema = Joi.object({
-  status: Joi.string().valid('accepted', 'rejected').required().messages({
-    'any.only': 'Status must be either "accepted" or "rejected"',
-    'any.required': 'Status is required',
-  }),
-});
+const paymentValidations = {
+  payInstructor: {
+    body: Joi.object().keys({
+      amount: Joi.number().required(),
+      pupilId: Joi.string().required(),
+      instructorId: Joi.string().required(),
+      courseId: Joi.string().required(),
+    }),
+  },
+};

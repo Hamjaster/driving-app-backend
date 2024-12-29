@@ -3,6 +3,7 @@ import pupilRoutes from './pupil.route.js';
 import adminRoutes from './admin.route.js';
 import bookingRoutes from './booking.route.js';
 import instructorRoutes from './instructor.route.js';
+import paymentRoutes from './payment.route.js';
 import config from '../../config/config.js';
 
 const router = express.Router();
@@ -23,6 +24,10 @@ const defaultRoutes = [
   {
     path: '/instructor',
     route: instructorRoutes,
+  },
+  {
+    path: '/payment',
+    route: paymentRoutes,
   },
   // {
   //   path: '/users',

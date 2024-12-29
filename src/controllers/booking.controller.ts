@@ -38,8 +38,8 @@ const bookingController = {
 
         // Temporarily create the booking in pending status
         const booking = await Booking.create({
-          pupilId,
-          instructorId,
+          pupil: pupilId,
+          instructor: instructorId,
           bookingType,
           package: pkg,
           lessonsType,
@@ -68,6 +68,17 @@ const bookingController = {
       }
     } catch (err) {
       console.error(err);
+      return res.status(500).json({ success: false, message: 'Server error' });
+    }
+  },
+  getBookings: async (req: any, res: any) => {
+    const pupilId = req.user._id;
+
+    try {
+      const allBookings = await Booking.find({ pupil: pupilId }).populate('instructor', 'firstName lastName email');
+      return res.status(200).json({ success: true, bookings: allBookings });
+    } catch (error) {
+      console.error(error);
       return res.status(500).json({ success: false, message: 'Server error' });
     }
   },

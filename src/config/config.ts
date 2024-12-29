@@ -87,5 +87,7 @@ const Config = {
   </div>
 </body>
 </html>`,
+  stripeClientSecret: envVars.STRIPE_CLIENT_SECRET,
+  stripeApiKey: envVars.STRIPE_API_KEY,
 };
 export default Config;

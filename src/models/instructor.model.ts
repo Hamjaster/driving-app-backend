@@ -21,6 +21,13 @@ export interface IInstructor extends Document {
     review: string;
     date: Date;
   }[];
+  package: [
+    {
+      packageId: string;
+      price: number;
+      description;
+    }
+  ];
 }
 
 const InstructorSchema = new Schema({
