@@ -7,5 +7,9 @@ router.post(
   '/create', // Only admins can create instructors
   instructorController.createInstructor
 );
+router.get(
+  '/getByPostalCode', // Only admins can create instructors
+  instructorController.getInstructorsByPostalCode
+);
 
 export default router;
