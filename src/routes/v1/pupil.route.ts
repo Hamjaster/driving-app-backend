@@ -16,7 +16,12 @@ router.post('/login', validate(pupilValidation.login), PupilController.login);
 // router.post('/logout', validate(authValidation.logout), PupilController.logout);
 // router.post('/refresh-tokens', validate(authValidation.refreshTokens), PupilController.refreshTokens);
 router.post('/forgot-password', auth(), validate(pupilValidation.forgotPassword), PupilController.forgotPassword);
-router.post('/change-forgotten-password', validate(pupilValidation.resetPassword), PupilController.changeForgottenPassword);
+router.post(
+  '/change-forgotten-password',
+  auth(),
+  validate(pupilValidation.resetPassword),
+  PupilController.changeForgottenPassword
+);
 // router.post('/reset-password', validate(authValidation.resetPassword), PupilController.resetPassword);
 router.post('/uploadAvatar', auth(), upload.single('file'), PupilController.uploadAvatar);
 // router.post('/verify-email', validate(authValidation.verifyEmail), PupilController.verifyEmail);
