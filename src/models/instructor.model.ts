@@ -22,13 +22,11 @@ export interface IInstructor extends Document {
     review: string;
     date: Date;
   }[];
-  package: [
-    {
-      packageId: string;
-      price: number;
-      description;
-    }
-  ];
+  packages: {
+    packageId: string;
+    price: number;
+    hours: number;
+  }[];
 }
 
 const InstructorSchema = new Schema({
@@ -51,6 +49,13 @@ const InstructorSchema = new Schema({
       rating: { type: Number, required: true },
       review: { type: String },
       date: { type: Date, default: Date.now },
+    },
+  ],
+  packages: [
+    {
+      packageId: { type: Number, required: true },
+      price: { type: String, required: true },
+      hours: { type: Number, required: true },
     },
   ],
 });
