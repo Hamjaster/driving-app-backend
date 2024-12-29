@@ -54,7 +54,7 @@ const InstructorSchema = new Schema({
   packages: [
     {
       packageId: { type: Number, required: true },
-      price: { type: String, required: true },
+      price: { type: Number, required: true },
       hours: { type: Number, required: true },
     },
   ],

@@ -19,7 +19,7 @@ const bookingController = {
       if (!instructor) {
         return res.status(404).json({ success: false, message: 'Instructor not found' });
       }
-
+      console.log(instructor.availability, 'instructor availability');
       const isAvailable = instructor.availability.some(
         (availability) =>
           availability.isAvailable && new Date(availability.date).toISOString() === new Date(date).toISOString()
