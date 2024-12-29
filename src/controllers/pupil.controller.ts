@@ -129,10 +129,7 @@ export const PupilController = {
 
   async changeForgottenPassword(req: any, res: any) {
     try {
-      const { token, oldPassword, newPassword } = req.body;
-      if (oldPassword === newPassword) {
-        throw new ApiError(httpStatus.BAD_REQUEST, 'New password must be different from the old password');
-      }
+      const { token, password } = req.body;
 
       const tokenDoc = await tokenService.verifyToken(token, tokenTypes.RESET_PASSWORD, userTypes.PUPIL);
       if (!tokenDoc) {
@@ -143,15 +140,9 @@ export const PupilController = {
         throw new ApiError(httpStatus.UNAUTHORIZED, 'No Such Pupil Registered');
       }
 
-      // Verify the old password
-      const isPasswordMatch = await verifyPassword(oldPassword, pupilFound.password);
-      if (!isPasswordMatch) {
-        throw new ApiError(httpStatus.UNAUTHORIZED, 'Incorrect old password');
-      }
-
       await Pupil.findByIdAndUpdate(
         pupilFound.id,
-        { password: await hashPassword(newPassword) },
+        { password: await hashPassword(password) },
         { new: true, runValidators: true }
       );
 
