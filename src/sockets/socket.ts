@@ -1,10 +1,10 @@
 import { Server } from 'socket.io';
-import { Message } from '../models/message.model';
-import tokenServices from '../services/token.service';
-import { tokenTypes } from '../config/tokens';
-import { Pupil } from '../models/pupil.model';
-import { Instructor } from '../models/instructor.model';
-import { IToken } from '../models/token.model';
+import { Message } from '../models/message.model.js';
+import tokenServices from '../services/token.service.js';
+import { tokenTypes } from '../config/tokens.js';
+import { Pupil } from '../models/pupil.model.js';
+import { Instructor } from '../models/instructor.model.js';
+import { IToken } from '../models/token.model.js';
 
 export const initSocket = (httpServer: any) => {
   const io = new Server(httpServer, {
