@@ -15,7 +15,7 @@ router.post('/edit', auth(), validate(pupilValidation.editDetails), PupilControl
 router.post('/login', validate(pupilValidation.login), PupilController.login);
 // router.post('/logout', validate(authValidation.logout), PupilController.logout);
 // router.post('/refresh-tokens', validate(authValidation.refreshTokens), PupilController.refreshTokens);
-router.post('/forgot-password', auth(), validate(pupilValidation.forgotPassword), PupilController.forgotPassword);
+router.post('/forgot-password', auth(), PupilController.forgotPassword);
 router.post(
   '/change-forgotten-password',
   auth(),

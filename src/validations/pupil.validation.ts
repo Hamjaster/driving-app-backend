@@ -74,12 +74,6 @@ const pupilValidation = {
     }),
   },
 
-  forgotPassword: {
-    body: Joi.object().keys({
-      email: Joi.string().email().required(),
-    }),
-  },
-
   resetPassword: {
     body: Joi.object().keys({
       token: Joi.string().required(),
