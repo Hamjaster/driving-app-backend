@@ -34,7 +34,7 @@ export const PupilController = {
       const approvalToken = tokenService.generateToken(pupil.id, tokenTypes.VERIFY_PUPIL, userTypes.PUPIL);
       await sendPupilApprovalEmail(pupil.firstName, Config.adminEmail, approvalToken);
 
-      res.status(httpStatus.CREATED).send({ message: 'You approval request have been sent to admin' });
+      res.status(httpStatus.CREATED).send({ pupilId: pupil.id, message: 'You approval request have been sent to admin' });
     } catch (error: any) {
       res.status(error.statusCode || httpStatus.INTERNAL_SERVER_ERROR).send({ message: error.message });
     }
