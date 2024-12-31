@@ -10,7 +10,7 @@ import httpStatus from 'http-status';
 const bookingController = {
   createBooking: async (req: any, res: any) => {
     const pupilId = req.user._id;
-    const { instructorId, bookingType, package: pkg, lessonsType, date } = req.body;
+    const { instructorId, bookingType, package: pkg, lessonsType, start, end } = req.body;
 
     try {
       // Check instructor availability
@@ -19,20 +19,27 @@ const bookingController = {
       if (!instructor) {
         return res.status(404).json({ success: false, message: 'Instructor not found' });
       }
-      console.log(instructor.availability, 'instructor availability');
-      const isAvailable = instructor.availability.some(
-        (availability) =>
-          availability.isAvailable && new Date(availability.date).toISOString() === new Date(date).toISOString()
-      );
 
+      const isAvailable = instructor.availability.some((availability) => {
+        console.log(new Date(availability.start).toISOString(), new Date(start).toISOString());
+        console.log(new Date(availability.end).toISOString(), new Date(end).toISOString());
+
+        return (
+          new Date(availability.start).toISOString() === new Date(start).toISOString() &&
+          new Date(availability.end).toISOString() === new Date(end).toISOString()
+        );
+      });
+
+      console.log(isAvailable, 'isAvailable');
       if (isAvailable) {
-        // Mark the instructor as unavailable for the chosen date
-        instructor.availability = instructor.availability.map((availability) => {
-          if (new Date(availability.date).toISOString() === new Date(date).toISOString()) {
-            availability.isAvailable = false;
-          }
-          return availability;
-        });
+        // Remove the time slot from availability
+        instructor.availability = instructor.availability.filter(
+          (availability) =>
+            !(
+              new Date(availability.start).toISOString() === new Date(start).toISOString() &&
+              new Date(availability.end).toISOString() === new Date(end).toISOString()
+            )
+        );
 
         await instructor.save();
 
@@ -43,7 +50,8 @@ const bookingController = {
           bookingType,
           package: pkg,
           lessonsType,
-          date,
+          start,
+          end,
           status: 'pending',
         });
 
@@ -63,7 +71,7 @@ const bookingController = {
       } else {
         return res.status(httpStatus.NOT_FOUND).json({
           success: false,
-          message: 'The instructor is not available for that date',
+          message: 'The instructor is not available for that time slot',
         });
       }
     } catch (err) {

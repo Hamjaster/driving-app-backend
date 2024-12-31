@@ -10,8 +10,8 @@ export interface IInstructor extends Document {
   email: string;
   password: string;
   availability: {
-    date: Date;
-    isAvailable: boolean;
+    start: Date;
+    end: Date;
   }[]; // An array of dates showing availability
   profilePicture?: string;
   phoneNumber?: string;
@@ -37,8 +37,8 @@ const InstructorSchema = new Schema({
   postalCode: { type: Number, required: true },
   availability: [
     {
-      date: { type: Date, required: true },
-      isAvailable: { type: Boolean, default: true },
+      start: { type: Date, required: true },
+      end: { type: Date, required: true },
     },
   ],
   profilePicture: { type: String },

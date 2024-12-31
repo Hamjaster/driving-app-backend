@@ -19,11 +19,9 @@ const instructorController = {
       const newInstructor = new Instructor({
         firstName,
         lastName,
-
         password,
         email,
         phoneNumber,
-
         availability,
       });
 
@@ -40,7 +38,7 @@ const instructorController = {
     }
   },
   updateAvailability: async (req: any, res: any) => {
-    const { instructorId, availability } = req.body; // Availability should be an array of { date, isAvailable }
+    const { instructorId, availability } = req.body; // Availability should be an array of { start, end }
 
     try {
       const instructor = await Instructor.findById(instructorId);

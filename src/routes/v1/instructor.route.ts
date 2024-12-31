@@ -8,5 +8,6 @@ router.post(
   instructorController.createInstructor
 );
 router.get('/getByPostalCode', instructorController.getInstructorsByPostalCode);
+router.post('/updateAvailability', instructorController.updateAvailability);
 
 export default router;

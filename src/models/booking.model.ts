@@ -11,7 +11,8 @@ export interface IBooking extends Document {
     price: number;
   };
   lessonsType: 'automatic' | 'manual';
-  date: Date;
+  start: Date;
+  end: Date;
   status: 'pending' | 'accepted' | 'rejected';
   bookingAmountDeducted: boolean;
   createdAt: Date;
@@ -32,7 +33,8 @@ const BookingSchema = new Schema<IBooking>(
       price: { type: Number, required: true },
     },
     lessonsType: { type: String, enum: ['automatic', 'manual'], required: true },
-    date: { type: Date, required: true },
+    start: { type: Date, required: true },
+    end: { type: Date, required: true },
     status: { type: String, enum: ['pending', 'accepted', 'rejected'], default: 'pending' },
     bookingAmountDeducted: { type: Boolean, default: false },
   },
