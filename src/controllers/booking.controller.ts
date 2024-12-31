@@ -9,8 +9,8 @@ import httpStatus from 'http-status';
 
 const bookingController = {
   createBooking: async (req: any, res: any) => {
-    const pupilId = req.user._id;
-    const { instructorId, bookingType, package: pkg, lessonsType, start, end } = req.body;
+    // const pupilId = req.user._id;
+    const { pupilId, instructorId, bookingType, package: pkg, lessonsType, start, end } = req.body;
 
     try {
       // Check instructor availability

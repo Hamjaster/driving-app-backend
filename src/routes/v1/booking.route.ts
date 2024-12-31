@@ -6,7 +6,7 @@ import bookingController from '../../controllers/booking.controller.js';
 
 const router = express.Router();
 
-router.post('/create', auth('pupil'), validate(bookingValidations.createBooking), bookingController.createBooking);
+router.post('/create', validate(bookingValidations.createBooking), bookingController.createBooking);
 router.get('/get', auth('pupil'), bookingController.getBookings);
 
 export default router;
