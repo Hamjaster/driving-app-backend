@@ -117,8 +117,8 @@ export const PupilController = {
   },
 
   async forgotPassword(req: any, res: any) {
-    const pupilId = req.user._id;
-    const pupil = await Pupil.findById(pupilId);
+    const { email } = req.body;
+    const pupil = await Pupil.findOne({ email });
     if (!pupil) {
       throw new ApiError(httpStatus.NOT_FOUND, 'No Such Pupil Registered');
     }
