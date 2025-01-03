@@ -9,10 +9,14 @@ const instructorController = {
     const { firstName, lastName, email, password, phoneNumber, availability } = req.body as IInstructor;
 
     try {
+      if (!email || !password) {
+        throw new ApiError(httpStatus.BAD_REQUEST, 'Email and password are required');
+      }
+
       // Check if the instructor already exists
       const existingInstructor = await Instructor.findOne({ email });
       if (existingInstructor) {
-        return res.status(400).json({ success: false, message: 'Instructor already exists with this email' });
+        throw new ApiError(httpStatus.BAD_REQUEST, 'Instructor already exists with this email');
       }
 
       // Create the instructor
@@ -34,17 +38,21 @@ const instructorController = {
       });
     } catch (err) {
       console.error(err);
-      return res.status(500).json({ success: false, message: 'Server error' });
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: 'Server error' });
     }
   },
   updateAvailability: async (req: any, res: any) => {
     const { instructorId, availability } = req.body; // Availability should be an array of { start, end }
 
     try {
+      if (!instructorId || !availability) {
+        throw new ApiError(httpStatus.BAD_REQUEST, 'Instructor ID and availability are required');
+      }
+
       const instructor = await Instructor.findById(instructorId);
 
       if (!instructor) {
-        return res.status(404).json({ success: false, message: 'Instructor not found' });
+        throw new ApiError(httpStatus.NOT_FOUND, 'Instructor not found');
       }
 
       instructor.availability = availability;
@@ -58,7 +66,7 @@ const instructorController = {
       });
     } catch (err) {
       console.error(err);
-      return res.status(500).json({ success: false, message: 'Server error' });
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: 'Server error' });
     }
   },
   getInstructorsByPostalCode: async (req: any, res: any): Promise<void> => {
@@ -75,6 +83,7 @@ const instructorController = {
 
       res.status(httpStatus.OK).send({ instructors });
     } catch (error: any) {
+      console.error(error);
       res.status(error.statusCode || httpStatus.INTERNAL_SERVER_ERROR).send({ message: error.message });
     }
   },

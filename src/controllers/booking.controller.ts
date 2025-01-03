@@ -1,34 +1,44 @@
 import { Pupil } from '../models/pupil.model.js';
-import { Instructor } from '../models/instructor.model.js';
+import { IInstructor, Instructor } from '../models/instructor.model.js';
 import { Booking } from '../models/booking.model.js';
 import { sendEmail } from '../services/email.service.js';
 import Config from '../config/config.js';
 import tokenServices from '../services/token.service.js';
 import { tokenTypes, userTypes } from '../config/tokens.js';
 import httpStatus from 'http-status';
+import { ApiError } from '../utils/ApiError.js';
+import { ppid } from 'process';
 
 const bookingController = {
   createBooking: async (req: any, res: any) => {
-    // const pupilId = req.user._id;
     const { pupilId, instructorId, bookingType, package: pkg, lessonsType, start, end } = req.body;
 
     try {
-      // Check instructor availability
-      const instructor = await Instructor.findById(instructorId);
-
-      if (!instructor) {
-        return res.status(404).json({ success: false, message: 'Instructor not found' });
+      if (!pupilId || !instructorId || !start || !end) {
+        throw new ApiError(httpStatus.BAD_REQUEST, 'Required fields are missing');
       }
 
-      const isAvailable = instructor.availability.some((availability) => {
-        console.log(new Date(availability.start).toISOString(), new Date(start).toISOString());
-        console.log(new Date(availability.end).toISOString(), new Date(end).toISOString());
+      // Check instructor availability
+      const instructor = await Instructor.findById(instructorId);
+      const pupil = await Pupil.findById(pupilId);
 
-        return (
-          new Date(availability.start).toISOString() === new Date(start).toISOString() &&
-          new Date(availability.end).toISOString() === new Date(end).toISOString()
-        );
-      });
+      if (!instructor || !pupil) {
+        throw new ApiError(httpStatus.NOT_FOUND, 'Instructor or Pupil not found');
+      }
+
+      console.log(instructor, 'inst', start, 'start', end, 'end');
+
+      const isInstructorAvailable = (instructor: IInstructor, start: Date, end: Date): boolean => {
+        return instructor.availability.some((availability) => {
+          const availabilityStart = new Date(availability.start);
+          const availabilityEnd = new Date(availability.end);
+
+          // Check if the start and end fall within the availability range
+          return start >= availabilityStart && end <= availabilityEnd;
+        });
+      };
+
+      const isAvailable = isInstructorAvailable(instructor, new Date(start), new Date(end));
 
       console.log(isAvailable, 'isAvailable');
       if (isAvailable) {
@@ -60,7 +70,7 @@ const bookingController = {
         await sendEmail(
           Config.adminEmail,
           'Booking Approval Required',
-          `A new booking request has been created by pupil ${req.user.firstName}. Please approve or reject using the token below:\n\nToken: ${approvalToken}`
+          `A new booking request has been created by pupil ${pupil.firstName}. Please approve or reject using the token below:\n\nToken: ${approvalToken}`
         );
 
         return res.status(201).json({
@@ -76,18 +86,25 @@ const bookingController = {
       }
     } catch (err) {
       console.error(err);
-      return res.status(500).json({ success: false, message: 'Server error' });
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: 'Server error' });
     }
   },
   getBookings: async (req: any, res: any) => {
     const pupilId = req.user._id;
 
     try {
+      if (!pupilId) {
+        throw new ApiError(httpStatus.UNAUTHORIZED, 'User not authenticated');
+      }
+
       const allBookings = await Booking.find({ pupil: pupilId }).populate('instructor', 'firstName lastName email');
-      return res.status(200).json({ success: true, bookings: allBookings });
+      if (!allBookings || allBookings.length === 0) {
+        throw new ApiError(httpStatus.NOT_FOUND, 'No bookings found');
+      }
+      return res.status(httpStatus.OK).json({ success: true, bookings: allBookings });
     } catch (error) {
       console.error(error);
-      return res.status(500).json({ success: false, message: 'Server error' });
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: 'Server error' });
     }
   },
 };

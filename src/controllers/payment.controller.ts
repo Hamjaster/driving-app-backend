@@ -7,6 +7,7 @@ import { Booking } from '../models/booking.model.js';
 
 import dotenv from 'dotenv';
 import Stripe from 'stripe';
+import { ApiError } from '../utils/ApiError.js';
 dotenv.config();
 
 const stripe = new Stripe(Config.stripeClientSecret);
@@ -15,7 +16,13 @@ const PaymentController = {
   quickPayment: async (req: any, res: any) => {
     try {
       const pupil = req.user;
+      if (!pupil) {
+        throw new ApiError(httpStatus.UNAUTHORIZED, 'User not authenticated');
+      }
       const instructor = await Instructor.findById(req.body.instructorId);
+      if (!instructor) {
+        throw new ApiError(httpStatus.NOT_FOUND, 'Instructor not found');
+      }
 
       if (!pupil || !instructor) {
         return res.status(httpStatus.BAD_REQUEST).send({
@@ -54,19 +61,20 @@ const PaymentController = {
         paymentId: paymentCreated.id,
       });
     } catch (err) {
-      res.send(err);
+      console.error(err);
+      res.status(httpStatus.INTERNAL_SERVER_ERROR).send({ success: false, message: 'Internal Server Error', error: err });
     }
   },
   payForBooking: async (req: any, res: any) => {
     try {
       const pupilId = req.user._id;
+      if (!pupilId) {
+        throw new ApiError(httpStatus.UNAUTHORIZED, 'User not authenticated');
+      }
       const bookingF = await Booking.findById(req.body.bookingId).populate('instructor', 'pupil');
 
       if (!bookingF) {
-        return res.status(httpStatus.BAD_REQUEST).send({
-          success: false,
-          message: 'The desired booking was not found',
-        });
+        throw new ApiError(httpStatus.NOT_FOUND, 'Booking not found');
       }
       if (bookingF.status !== 'accepted') {
         return res.status(httpStatus.BAD_REQUEST).send({
@@ -107,17 +115,26 @@ const PaymentController = {
         paymentId: paymentCreated.id,
       });
     } catch (err) {
-      res.send(err);
+      console.error(err);
+      res.status(httpStatus.INTERNAL_SERVER_ERROR).send({ success: false, message: 'Internal Server Error', error: err });
     }
   },
   sendApiKey: async (req: any, res: any) => {
-    res.status(httpStatus.ACCEPTED).send({
-      StripeApiKey: Config.stripeApiKey,
-    });
+    try {
+      res.status(httpStatus.ACCEPTED).send({
+        StripeApiKey: Config.stripeApiKey,
+      });
+    } catch (err) {
+      console.error(err);
+      res.status(httpStatus.INTERNAL_SERVER_ERROR).send({ success: false, message: 'Internal Server Error', error: err });
+    }
   },
   confirmPayment: async (req: any, res: any) => {
     try {
       const payment = await Payment.findById(req.body.paymentId);
+      if (!payment) {
+        throw new ApiError(httpStatus.NOT_FOUND, 'Payment not found');
+      }
       // Update payment
       payment.paymentStatus = 'Completed';
       await payment.save();
@@ -141,19 +158,27 @@ const PaymentController = {
         payment,
       });
     } catch (err) {
-      res.status(httpStatus.INTERNAL_SERVER_ERROR).send({ success: false, message: 'Payment not confirmed', error: err });
+      console.error(err);
+      res.status(httpStatus.INTERNAL_SERVER_ERROR).send({ success: false, message: 'Internal Server Error', error: err });
     }
   },
   getPaymentHistory: async (req: any, res: any) => {
     try {
       const pupil = req.user;
+      if (!pupil) {
+        throw new ApiError(httpStatus.UNAUTHORIZED, 'User not authenticated');
+      }
       const payments = await Payment.find({ pupil: pupil._id }).populate('instructor', 'firstName lastName');
+      if (!payments || payments.length === 0) {
+        throw new ApiError(httpStatus.NOT_FOUND, 'No payment history found');
+      }
       res.status(httpStatus.ACCEPTED).send({
         success: true,
         payments,
       });
     } catch (err) {
-      res.status(httpStatus.INTERNAL_SERVER_ERROR).send({ success: false, message: 'Payments not found', error: err });
+      console.error(err);
+      res.status(httpStatus.INTERNAL_SERVER_ERROR).send({ success: false, message: 'Internal Server Error', error: err });
     }
   },
 };

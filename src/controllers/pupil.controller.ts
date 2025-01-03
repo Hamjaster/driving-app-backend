@@ -27,6 +27,9 @@ export const PupilController = {
   async register(req: any, res: any): Promise<void> {
     try {
       const body = req.body as IPupil;
+      if (!body.email || !body.password) {
+        throw new ApiError(httpStatus.BAD_REQUEST, 'Email and password are required');
+      }
       const pupil = await pupilService.createPupil(body);
       // const token = tokenService.generateToken(pupil.id, tokenTypes.ACCESS);
       console.log(pupil.id, 'PUPIL ID');
@@ -36,12 +39,16 @@ export const PupilController = {
 
       res.status(httpStatus.CREATED).send({ pupilId: pupil.id, message: 'You approval request have been sent to admin' });
     } catch (error: any) {
+      console.error(error);
       res.status(error.statusCode || httpStatus.INTERNAL_SERVER_ERROR).send({ message: error.message });
     }
   },
   async editDetails(req: any, res: any): Promise<void> {
     try {
       const id = req.user._id; // ID of the pupil to update
+      if (!id) {
+        throw new ApiError(httpStatus.UNAUTHORIZED, 'User not authenticated');
+      }
       const updateData = req.body;
 
       const updatedPupil = await pupilServices.editPupil(id, updateData);
@@ -51,13 +58,20 @@ export const PupilController = {
         data: updatedPupil,
       });
     } catch (error: any) {
+      console.error(error);
       res.status(httpStatus.INTERNAL_SERVER_ERROR).send({ message: error.message });
     }
   },
   async uploadAvatar(req: any, res: any): Promise<void> {
     try {
-      console.log(req.file, 'req.file');
+      if (!req.file) {
+        throw new ApiError(httpStatus.BAD_REQUEST, 'No file uploaded');
+      }
       const pupilID = req.user._id;
+      if (!pupilID) {
+        throw new ApiError(httpStatus.UNAUTHORIZED, 'User not authenticated');
+      }
+      console.log(req.file, 'req.file');
 
       let cld_upload_stream = cloudinary.uploader.upload_stream(
         {
@@ -80,6 +94,7 @@ export const PupilController = {
 
       streamifier.createReadStream(req.file.buffer).pipe(cld_upload_stream);
     } catch (error) {
+      console.error(error);
       res.status(httpStatus.EXPECTATION_FAILED).send({ message: error.message });
     }
   },
@@ -87,6 +102,9 @@ export const PupilController = {
   async login(req: any, res: any): Promise<void> {
     try {
       const { email, password, otp } = req.body;
+      if (!email || !password) {
+        throw new ApiError(httpStatus.BAD_REQUEST, 'Email and password are required');
+      }
       const pupil = await pupilService.getPupilByEmail(email);
       // @ts-ignore
       if (!pupil || !(await pupil.isPasswordMatch(password))) {
@@ -112,25 +130,36 @@ export const PupilController = {
       const token = tokenService.generateToken(pupil.id, tokenTypes.ACCESS, userTypes.PUPIL);
       res.status(httpStatus.OK).send({ pupil, token });
     } catch (error: any) {
+      console.error(error);
       res.status(error.statusCode || httpStatus.INTERNAL_SERVER_ERROR).send({ message: error.message });
     }
   },
 
   async forgotPassword(req: any, res: any) {
-    const { email } = req.body;
-    const pupil = await Pupil.findOne({ email });
-    if (!pupil) {
-      throw new ApiError(httpStatus.NOT_FOUND, 'No Such Pupil Registered');
+    try {
+      const { email } = req.body;
+      if (!email) {
+        throw new ApiError(httpStatus.BAD_REQUEST, 'Email is required');
+      }
+      const pupil = await Pupil.findOne({ email });
+      if (!pupil) {
+        throw new ApiError(httpStatus.NOT_FOUND, 'No Such Pupil Registered');
+      }
+      const resetPasswordToken = await tokenService.generateResetPasswordToken(pupil.id, userTypes.PUPIL);
+      await sendResetPasswordEmail(pupil.email, resetPasswordToken);
+      res.status(httpStatus.OK).send({ message: 'Reset Password link sent to email' });
+    } catch (error: any) {
+      console.error(error);
+      res.status(error.statusCode || httpStatus.INTERNAL_SERVER_ERROR).send({ message: error.message });
     }
-    const resetPasswordToken = await tokenService.generateResetPasswordToken(pupil.id, userTypes.PUPIL);
-    await sendResetPasswordEmail(pupil.email, resetPasswordToken);
-    res.status(httpStatus.OK).send({ message: 'Reset Password link sent to email' });
   },
 
   async changeForgottenPassword(req: any, res: any) {
     try {
       const { token, password } = req.body;
-
+      if (!token || !password) {
+        throw new ApiError(httpStatus.BAD_REQUEST, 'Token and new password are required');
+      }
       const tokenDoc = await tokenService.verifyToken(token, tokenTypes.RESET_PASSWORD, userTypes.PUPIL);
       if (!tokenDoc) {
         throw new ApiError(httpStatus.UNAUTHORIZED, 'Unauthenticated');
@@ -148,6 +177,7 @@ export const PupilController = {
 
       res.status(httpStatus.OK).send({ message: 'Password updated' });
     } catch (error) {
+      console.error(error);
       res.status(error.statusCode || httpStatus.INTERNAL_SERVER_ERROR).send({ message: error.message });
     }
   },

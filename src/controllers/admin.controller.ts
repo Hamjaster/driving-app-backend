@@ -7,19 +7,20 @@ import { sendEmail, sendPupilApprovalEmail } from '../services/email.service.js'
 import Config from '../config/config.js';
 import { Instructor } from '../models/instructor.model.js';
 import { Booking } from '../models/booking.model.js';
+import { ApiError } from '../utils/ApiError.js';
 
 const AdminController = {
   async approvePupilRequest(req: any, res: any): Promise<void> {
     try {
       const { token } = req.body;
       if (!token) {
-        throw new Error('Approval token not found');
+        throw new ApiError(httpStatus.BAD_REQUEST, 'Approval token is required');
       }
       const pupilId = await adminServices.approvePupil(token);
       const updatedPupil = await Pupil.findById(pupilId);
 
       if (!updatedPupil) {
-        return res.status(404).send({ message: 'Pupil not found' });
+        throw new ApiError(httpStatus.NOT_FOUND, 'Pupil not found');
       }
       // Send OTP to Pupil for login
       const otp = tokenServices.generateOTP(updatedPupil.id, userTypes.PUPIL);
@@ -27,6 +28,7 @@ const AdminController = {
 
       res.status(httpStatus.ACCEPTED).send({ message: 'Registration of Pupil is approved' });
     } catch (error: any) {
+      console.error(error);
       res.status(error.statusCode || httpStatus.INTERNAL_SERVER_ERROR).send({ message: error.message });
     }
   },
@@ -34,16 +36,20 @@ const AdminController = {
     const { token, status } = req.body; // `status` can be 'accepted' or 'rejected'
 
     try {
+      if (!token || !status) {
+        throw new ApiError(httpStatus.BAD_REQUEST, 'Token and status are required');
+      }
       const isApproved = await tokenServices.verifyToken(token, tokenTypes.BOOKING_APPROVAL, userTypes.PUPIL);
-      console.log(isApproved, 'is approved?');
-      // const { pupilId, instructorId, date } = decoded;
+      if (!isApproved) {
+        throw new ApiError(httpStatus.UNAUTHORIZED, 'Invalid or expired token');
+      }
       const bookingId = isApproved.user;
 
       // Find the booking
       const booking = await Booking.findById(bookingId);
 
       if (!booking) {
-        return res.status(404).json({ success: false, message: 'Booking not found or already processed' });
+        throw new ApiError(httpStatus.NOT_FOUND, 'Booking not found or already processed');
       }
 
       // Update the booking status
@@ -53,15 +59,16 @@ const AdminController = {
       if (status === 'accepted') {
         const instructor = await Instructor.findById(booking.instructor);
         console.log(instructor, 'instructor');
-        instructor.availability = instructor.availability.map((availability) => {
-          if (new Date(availability.date).toISOString() === new Date(booking.date).toISOString()) {
-            availability.isAvailable = false;
-          }
-          return availability;
+        // Remove the object from instructor availability if it matches the booking start and end
+        instructor.availability = instructor.availability.filter((availability) => {
+          return !(
+            new Date(availability.start).toISOString() === new Date(booking.start).toISOString() &&
+            new Date(availability.end).toISOString() === new Date(booking.end).toISOString()
+          );
         });
 
         await instructor.save();
-        console.log('instructor availablity made false at ', booking.date);
+        console.log('instructor availability updated at ', booking.start, booking.end);
       }
 
       await booking.save();
@@ -73,7 +80,7 @@ const AdminController = {
       });
     } catch (err) {
       console.error(err);
-      return res.status(400).json({ success: false, message: 'Internal Server Error' });
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: 'Internal Server Error' });
     }
   },
 };
